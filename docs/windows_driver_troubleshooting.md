@@ -4,6 +4,13 @@
 
 If you see this error in Windows Device Manager for the "USB Input Device" under your LattePanda Leonardo, follow these steps:
 
+### Compiler Warnings (Normal)
+You may see these warnings during compilation - they are normal and expected:
+- `#warning "using legacy HID core (non pluggable)"` - This is normal for ATmega32U4 boards
+- `#pragma message "Using default ASCII layout for keyboard modules"` - This is expected behavior
+
+These warnings do not affect functionality and can be safely ignored.
+
 ### Step 1: Update USB Descriptor Information
 The code has been updated to use standard Arduino Leonardo USB identifiers for better Windows driver compatibility:
 - **Vendor ID**: 0x2341 (Arduino LLC)
