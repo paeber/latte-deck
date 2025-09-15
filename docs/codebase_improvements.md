@@ -23,7 +23,7 @@ This document outlines the improvements made to streamline the LatteDeck codebas
 **Solution**: Added proper definitions in `upsDef.h`:
 ```cpp
 #define UPS_I2C_ADDRESS             0x55    // I2C address for UPS module
-#define THREE_BATTERIES_UPS_PID     0x1001  // Product ID for 3-battery UPS
+#define THREE_BATTERIES_UPS_PID     0x42AA  // Product ID for 3-battery UPS
 ```
 
 ### 3. **Inconsistent Preprocessor Directives**
@@ -80,10 +80,26 @@ Serial.print("/");
 Serial.println(maxRetries);
 ```
 
+### 7. **Windows HID Compatibility Fix**
+**Problem**: Windows reported "The default report ID is only allowed for devices with one top-level collection and font have any report ids explicitly declared"
+**Solution**: Removed explicit report IDs from all HID interfaces to ensure consistency:
+```cpp
+// Before (inconsistent report IDs):
+Power Device: Report IDs 1, 2, 3
+Mouse: No report ID
+Keyboard: No report ID
+
+// After (consistent - no report IDs):
+Power Device: Report ID 0 (default)
+Mouse: Report ID 0 (default)  
+Keyboard: Report ID 0 (default)
+```
+
 ## New File Structure
 
 ### Added Files
 - `config.h` - Centralized configuration file
+- `docs/windows_hid_compatibility_fix.md` - Windows HID compatibility fix documentation
 
 ### Modified Files
 - `gamepad.h` - Simplified by removing duplicate definitions
@@ -92,6 +108,8 @@ Serial.println(maxRetries);
 - `ups_ctrl.cpp` - Improved error handling
 - `ups_utils.cpp` - Reduced buffer sizes, added config include
 - `latte-deck.ino` - Standardized preprocessor directives
+- `composite_hid.cpp` - Removed explicit report IDs for Windows compatibility
+- `usb_config.h` - Updated to reflect no report ID usage
 
 ## Benefits of Improvements
 
@@ -126,7 +144,7 @@ The new `config.h` file provides:
 ```cpp
 // UPS Hardware
 #define UPS_I2C_ADDRESS             0x55
-#define THREE_BATTERIES_UPS_PID     0x1001
+#define THREE_BATTERIES_UPS_PID     0x42AA
 
 // LED Pins
 #define UPS_GREEN_LED               9

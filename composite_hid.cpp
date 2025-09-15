@@ -3,7 +3,7 @@
 
 using namespace CompositeHID;
 
-// Power Device HID Descriptor - Optimized for Windows compatibility
+// Power Device HID Descriptor - No report ID for Windows compatibility
 static const uint8_t _powerDeviceDescriptor[] PROGMEM = {
   0x05, 0x84,             // Usage Page (Power Device)
   0x09, 0x01,             // Usage (Power Device)
@@ -15,7 +15,6 @@ static const uint8_t _powerDeviceDescriptor[] PROGMEM = {
   0x26, 0x64, 0x00,       // Logical Max 100
   0x75, 0x08,             // Report Size 8
   0x95, 0x01,             // Report Count 1
-  0x85, LATTE_REPORT_ID_POWER_REMAINING, // Report ID
   0x81, 0x02,             // Input (Data,Var,Abs)
   
   // Runtime to Empty
@@ -24,7 +23,6 @@ static const uint8_t _powerDeviceDescriptor[] PROGMEM = {
   0x26, 0xFF, 0x7F,       // Logical Max 32767
   0x75, 0x10,             // Report Size 16
   0x95, 0x01,             // Report Count 1
-  0x85, LATTE_REPORT_ID_POWER_RUNTIME, // Report ID
   0x81, 0x02,             // Input (Data,Var,Abs)
   
   // Present Status
@@ -33,7 +31,6 @@ static const uint8_t _powerDeviceDescriptor[] PROGMEM = {
   0x26, 0xFF, 0x7F,       // Logical Max 32767
   0x75, 0x10,             // Report Size 16
   0x95, 0x01,             // Report Count 1
-  0x85, LATTE_REPORT_ID_POWER_STATUS, // Report ID
   0x81, 0x02,             // Input (Data,Var,Abs)
   
   0xC0                    // End Collection
@@ -165,23 +162,23 @@ void CompositeHID::begin()
   delay(100);
 }
 
-// Power Device functions
+// Power Device functions - No report ID for Windows compatibility
 int CompositeHID::sendPowerRemaining(uint8_t percentage)
 {
-  return HID().SendReport(LATTE_REPORT_ID_POWER_REMAINING, &percentage, sizeof(percentage));
+  return HID().SendReport(0, &percentage, sizeof(percentage));
 }
 
 int CompositeHID::sendPowerRuntime(uint16_t seconds)
 {
-  return HID().SendReport(LATTE_REPORT_ID_POWER_RUNTIME, &seconds, sizeof(seconds));
+  return HID().SendReport(0, &seconds, sizeof(seconds));
 }
 
 int CompositeHID::sendPowerStatus(uint16_t status)
 {
-  return HID().SendReport(LATTE_REPORT_ID_POWER_STATUS, &status, sizeof(status));
+  return HID().SendReport(0, &status, sizeof(status));
 }
 
-// Mouse functions
+// Mouse functions - No report ID for Windows compatibility
 int CompositeHID::sendMouseReport(int8_t x, int8_t y, uint8_t buttons, int8_t wheel)
 {
   uint8_t report[4];
@@ -190,7 +187,7 @@ int CompositeHID::sendMouseReport(int8_t x, int8_t y, uint8_t buttons, int8_t wh
   report[2] = y;
   report[3] = wheel;
   
-  return HID().SendReport(LATTE_REPORT_ID_MOUSE, report, sizeof(report));
+  return HID().SendReport(0, report, sizeof(report));
 }
 
 int CompositeHID::sendKeyboardReport(uint8_t modifiers, uint8_t key1, uint8_t key2, uint8_t key3, uint8_t key4, uint8_t key5, uint8_t key6)
@@ -205,7 +202,7 @@ int CompositeHID::sendKeyboardReport(uint8_t modifiers, uint8_t key1, uint8_t ke
   report[6] = key5;
   report[7] = key6;
   
-  return HID().SendReport(LATTE_REPORT_ID_KEYBOARD, report, sizeof(report));
+  return HID().SendReport(0, report, sizeof(report));
 }
 
 // Mouse helper functions
