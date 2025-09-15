@@ -18,9 +18,10 @@ Implemented a **Composite HID Device** that combines both functionalities into a
 ## Architecture
 
 ### Composite HID System
-- **Single HID Descriptor**: Contains all functionality (Power Device + Gamepad + Mouse + Keyboard)
+- **Single HID Descriptor**: Contains all functionality (Power Device + Mouse + Keyboard)
 - **Unique Report IDs**: Each functionality uses distinct report IDs to prevent conflicts
 - **Unified Interface**: Single point of control for all HID operations
+- **Windows-Compatible**: Uses standard Mouse and Keyboard HID devices instead of Gamepad for better Windows recognition
 
 ### Report ID Mapping
 | Functionality | Report ID | Description |
@@ -28,9 +29,8 @@ Implemented a **Composite HID Device** that combines both functionalities into a
 | Power Device | 1 | Battery remaining percentage |
 | Power Device | 2 | Runtime to empty (seconds) |
 | Power Device | 3 | Present status (bitfield) |
-| Gamepad | 4 | Gamepad buttons and axes |
-| Mouse | 5 | Mouse movement and clicks |
-| Keyboard | 6 | Keyboard key presses |
+| Mouse | 4 | Mouse movement, clicks, and scroll wheel |
+| Keyboard | 5 | Keyboard key presses |
 
 ## Implementation Details
 
@@ -165,9 +165,10 @@ The original implementation had several issues that prevented Windows from prope
 ### Testing on Windows:
 After these fixes, the device should be properly recognized by Windows as a composite HID device with:
 - Power Device functionality (battery status)
-- Gamepad functionality (joystick input)
 - Mouse functionality (cursor movement, clicks, scroll wheel)
 - Keyboard functionality (key presses)
+
+**Note**: The joystick input is now handled through Mouse and Keyboard functions rather than a separate Gamepad device, which provides better Windows compatibility.
 
 ## Important Installation Note
 

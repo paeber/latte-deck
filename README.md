@@ -6,7 +6,7 @@ A composite HID device that provides both UPS battery status reporting and gamep
 
 ## Features
 - **UPS Battery Reporting**: Reports battery status, remaining capacity, and runtime to the operating system
-- **Gamepad Functionality**: Dual joystick gamepad with mouse and keyboard emulation
+- **Mouse and Keyboard Emulation**: Dual joystick input converted to mouse movement and keyboard key presses
 - **Composite HID Device**: Single USB device with multiple HID interfaces to prevent conflicts
 
 ## Dependencies
@@ -36,11 +36,10 @@ A composite HID device that provides both UPS battery status reporting and gamep
 ## Architecture
 The project uses a composite HID device approach to combine multiple HID functionalities:
 - Power Device reports (battery status)
-- Gamepad reports (joystick input)
-- Mouse reports (cursor movement)
+- Mouse reports (cursor movement, clicks, scroll wheel)
 - Keyboard reports (key presses)
 
-This prevents HID descriptor conflicts that would occur with separate HID devices.
+The joystick input is converted to mouse movement and keyboard key presses for better Windows compatibility. This prevents HID descriptor conflicts that would occur with separate HID devices.
 
 ## Documentation
 See [docs/composite_hid_solution.md](docs/composite_hid_solution.md) for detailed technical information about the HID implementation.

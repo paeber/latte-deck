@@ -21,10 +21,9 @@ namespace CompositeHID {
     REPORT_ID_POWER_RUNTIME = 2, 
     REPORT_ID_POWER_STATUS = 3,
     
-    // Gamepad reports
-    REPORT_ID_GAMEPAD = 4,
-    REPORT_ID_MOUSE = 5,
-    REPORT_ID_KEYBOARD = 6
+    // Mouse and Keyboard reports (no gamepad - Windows expects separate devices)
+    REPORT_ID_MOUSE = 4,
+    REPORT_ID_KEYBOARD = 5
   };
 
   // Initialize the composite HID device
@@ -35,8 +34,7 @@ namespace CompositeHID {
   int sendPowerRuntime(uint16_t seconds);
   int sendPowerStatus(uint16_t status);
   
-  // Gamepad functions
-  int sendGamepadReport(uint8_t buttons, int8_t x, int8_t y, int8_t z, int8_t rz);
+  // Mouse and Keyboard functions (no gamepad - use mouse/keyboard directly)
   int sendMouseReport(int8_t x, int8_t y, uint8_t buttons, int8_t wheel = 0);
   int sendKeyboardReport(uint8_t modifiers, uint8_t key1, uint8_t key2, uint8_t key3, uint8_t key4, uint8_t key5, uint8_t key6);
   

@@ -39,31 +39,6 @@ static const uint8_t _compositeHidReportDescriptor[] PROGMEM = {
   0x81, 0x02,             // Input (Data,Var,Abs)
   0xC0,                   // End Collection
 
-  // Gamepad Usage Page (0x01 - Generic Desktop)
-  0x05, 0x01,             // Usage Page (Generic Desktop)
-  0x09, 0x05,             // Usage (Game Pad)
-  0xA1, 0x01,             // Collection (Application)
-  0x85, REPORT_ID_GAMEPAD,          // Report ID
-  0x05, 0x09,             // Usage Page (Button)
-  0x19, 0x01,             // Usage Minimum (Button 1)
-  0x29, 0x10,             // Usage Maximum (Button 16)
-  0x15, 0x00,             // Logical Minimum (0)
-  0x25, 0x01,             // Logical Maximum (1)
-  0x95, 0x10,             // Report Count (16)
-  0x75, 0x01,             // Report Size (1)
-  0x81, 0x02,             // Input (Data,Var,Abs)
-  0x05, 0x01,             // Usage Page (Generic Desktop)
-  0x09, 0x30,             // Usage (X)
-  0x09, 0x31,             // Usage (Y)
-  0x09, 0x32,             // Usage (Z)
-  0x09, 0x35,             // Usage (Rz)
-  0x15, 0x81,             // Logical Minimum (-127)
-  0x25, 0x7F,             // Logical Maximum (127)
-  0x75, 0x08,             // Report Size (8)
-  0x95, 0x04,             // Report Count (4)
-  0x81, 0x02,             // Input (Data,Var,Abs)
-  0xC0,                   // End Collection
-
   // Mouse Usage Page (0x01 - Generic Desktop)
   0x05, 0x01,             // Usage Page (Generic Desktop)
   0x09, 0x02,             // Usage (Mouse)
@@ -140,7 +115,6 @@ void CompositeHID::begin()
   sendPowerRemaining(0);
   sendPowerRuntime(0);
   sendPowerStatus(0);
-  sendGamepadReport(0, 0, 0, 0, 0);
   sendMouseReport(0, 0, 0, 0);
   sendKeyboardReport(0, 0, 0, 0, 0, 0, 0);
   
@@ -163,20 +137,7 @@ int CompositeHID::sendPowerStatus(uint16_t status)
   return HID().SendReport(REPORT_ID_POWER_STATUS, &status, sizeof(status));
 }
 
-// Gamepad functions
-int CompositeHID::sendGamepadReport(uint8_t buttons, int8_t x, int8_t y, int8_t z, int8_t rz)
-{
-  uint8_t report[6];
-  report[0] = buttons & 0xFF;        // Buttons 1-8
-  report[1] = (buttons >> 8) & 0xFF; // Buttons 9-16
-  report[2] = x;                     // X axis
-  report[3] = y;                     // Y axis
-  report[4] = z;                     // Z axis
-  report[5] = rz;                    // Rz axis
-  
-  return HID().SendReport(REPORT_ID_GAMEPAD, report, sizeof(report));
-}
-
+// Mouse functions
 int CompositeHID::sendMouseReport(int8_t x, int8_t y, uint8_t buttons, int8_t wheel)
 {
   uint8_t report[4];
