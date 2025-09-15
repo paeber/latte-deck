@@ -133,10 +133,9 @@ void CompositeHID::begin()
 {
   // Initialize USB HID with separate descriptors for better Windows compatibility
   
-  // Ensure proper USB configuration
-  USBDevice.setManufacturer(LATTE_USB_MANUFACTURER);
-  USBDevice.setProduct(LATTE_USB_PRODUCT);
-  USBDevice.setSerialNumber(LATTE_USB_SERIAL);
+  // USB configuration is handled through Arduino IDE board settings
+  // and the USB_VID and USB_PID definitions in usb_config.h
+  // The Leonardo doesn't support runtime USB descriptor changes
   
   // Register each HID descriptor separately
   HID().AppendDescriptor(&powerDeviceNode);

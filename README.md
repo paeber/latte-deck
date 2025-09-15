@@ -45,6 +45,8 @@ The joystick input is converted to mouse movement and keyboard key presses for b
 - [docs/composite_hid_solution.md](docs/composite_hid_solution.md) - Detailed technical information about the HID implementation
 - [docs/windows_driver_troubleshooting.md](docs/windows_driver_troubleshooting.md) - Windows driver installation and troubleshooting guide
 - [docs/hid_testing_guide.md](docs/hid_testing_guide.md) - Guide for testing all HID interfaces
+- [docs/leonardo_usb_limitations.md](docs/leonardo_usb_limitations.md) - USB descriptor limitations on Arduino Leonardo
+- [docs/project_structure_recommendations.md](docs/project_structure_recommendations.md) - Recommendations for improved project structure
 
 ## HID Implementation
 The latest version implements a true composite HID device with three separate interfaces:
