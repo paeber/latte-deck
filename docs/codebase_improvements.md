@@ -81,18 +81,18 @@ Serial.println(maxRetries);
 ```
 
 ### 7. **Windows HID Compatibility Fix**
-**Problem**: Windows reported "The default report ID is only allowed for devices with one top-level collection and font have any report ids explicitly declared"
-**Solution**: Removed explicit report IDs from all HID interfaces to ensure consistency:
+**Problem**: Windows reported "The parser discovered a top level collection in a complex device (more than one top level collection) that had no declared report ID or a report ID spanned multiple collections"
+**Solution**: Added proper report IDs to each top-level collection to ensure Windows compatibility:
 ```cpp
-// Before (inconsistent report IDs):
-Power Device: Report IDs 1, 2, 3
+// Before (no report IDs):
+Power Device: No report ID
 Mouse: No report ID
 Keyboard: No report ID
 
-// After (consistent - no report IDs):
-Power Device: Report ID 0 (default)
-Mouse: Report ID 0 (default)  
-Keyboard: Report ID 0 (default)
+// After (proper report IDs):
+Power Device: Report ID 1
+Mouse: Report ID 2  
+Keyboard: Report ID 3
 ```
 
 ## New File Structure

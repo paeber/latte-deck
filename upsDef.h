@@ -39,7 +39,10 @@ void initPowerDevice(void);
 
 // Always use CompositeHID for HID functionality
 #include "composite_hid.h"
-// Report IDs are not used - all interfaces use default report ID 0
+// Map old names to CompositeHID helpers for minimal intrusion
+#define HID_PD_REMAININGCAPACITY   LATTE_REPORT_ID_POWER_DEVICE
+#define HID_PD_RUNTIMETOEMPTY      LATTE_REPORT_ID_POWER_DEVICE
+#define HID_PD_PRESENTSTATUS       LATTE_REPORT_ID_POWER_DEVICE
 void printChargeData(void);
 void printChargeDataCompact(void);
 void printChargeDataCompactWithLimiter(void);

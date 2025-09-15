@@ -3,11 +3,14 @@
 
 using namespace CompositeHID;
 
-// Power Device HID Descriptor - No report ID for Windows compatibility
+// Power Device HID Descriptor - With report ID for Windows compatibility
 static const uint8_t _powerDeviceDescriptor[] PROGMEM = {
   0x05, 0x84,             // Usage Page (Power Device)
   0x09, 0x01,             // Usage (Power Device)
   0xA1, 0x01,             // Collection (Application)
+  
+  // Report ID for Power Device
+  0x85, LATTE_REPORT_ID_POWER_DEVICE, // Report ID
   
   // Battery Remaining Capacity
   0x09, 0x20,             // Usage (Battery Strength)
@@ -36,11 +39,15 @@ static const uint8_t _powerDeviceDescriptor[] PROGMEM = {
   0xC0                    // End Collection
 };
 
-// Mouse HID Descriptor - Standard HID mouse with wheel
+// Mouse HID Descriptor - With report ID for Windows compatibility
 static const uint8_t _mouseDescriptor[] PROGMEM = {
   0x05, 0x01,             // Usage Page (Generic Desktop)
   0x09, 0x02,             // Usage (Mouse)
   0xA1, 0x01,             // Collection (Application)
+  
+  // Report ID for Mouse
+  0x85, LATTE_REPORT_ID_MOUSE, // Report ID
+  
   0x09, 0x01,             // Usage (Pointer)
   0xA1, 0x00,             // Collection (Physical)
   
@@ -74,11 +81,14 @@ static const uint8_t _mouseDescriptor[] PROGMEM = {
   0xC0                    // End Collection (Application)
 };
 
-// Keyboard HID Descriptor - Standard boot protocol keyboard
+// Keyboard HID Descriptor - With report ID for Windows compatibility
 static const uint8_t _keyboardDescriptor[] PROGMEM = {
   0x05, 0x01,             // Usage Page (Generic Desktop)
   0x09, 0x06,             // Usage (Keyboard)
   0xA1, 0x01,             // Collection (Application)
+  
+  // Report ID for Keyboard
+  0x85, LATTE_REPORT_ID_KEYBOARD, // Report ID
   
   // Modifier keys (shift, ctrl, alt, etc)
   0x05, 0x07,             // Usage Page (Keyboard/Keypad)
@@ -162,23 +172,23 @@ void CompositeHID::begin()
   delay(100);
 }
 
-// Power Device functions - No report ID for Windows compatibility
+// Power Device functions - With report ID for Windows compatibility
 int CompositeHID::sendPowerRemaining(uint8_t percentage)
 {
-  return HID().SendReport(0, &percentage, sizeof(percentage));
+  return HID().SendReport(LATTE_REPORT_ID_POWER_DEVICE, &percentage, sizeof(percentage));
 }
 
 int CompositeHID::sendPowerRuntime(uint16_t seconds)
 {
-  return HID().SendReport(0, &seconds, sizeof(seconds));
+  return HID().SendReport(LATTE_REPORT_ID_POWER_DEVICE, &seconds, sizeof(seconds));
 }
 
 int CompositeHID::sendPowerStatus(uint16_t status)
 {
-  return HID().SendReport(0, &status, sizeof(status));
+  return HID().SendReport(LATTE_REPORT_ID_POWER_DEVICE, &status, sizeof(status));
 }
 
-// Mouse functions - No report ID for Windows compatibility
+// Mouse functions - With report ID for Windows compatibility
 int CompositeHID::sendMouseReport(int8_t x, int8_t y, uint8_t buttons, int8_t wheel)
 {
   uint8_t report[4];
@@ -187,7 +197,7 @@ int CompositeHID::sendMouseReport(int8_t x, int8_t y, uint8_t buttons, int8_t wh
   report[2] = y;
   report[3] = wheel;
   
-  return HID().SendReport(0, report, sizeof(report));
+  return HID().SendReport(LATTE_REPORT_ID_MOUSE, report, sizeof(report));
 }
 
 int CompositeHID::sendKeyboardReport(uint8_t modifiers, uint8_t key1, uint8_t key2, uint8_t key3, uint8_t key4, uint8_t key5, uint8_t key6)
@@ -202,7 +212,7 @@ int CompositeHID::sendKeyboardReport(uint8_t modifiers, uint8_t key1, uint8_t ke
   report[6] = key5;
   report[7] = key6;
   
-  return HID().SendReport(0, report, sizeof(report));
+  return HID().SendReport(LATTE_REPORT_ID_KEYBOARD, report, sizeof(report));
 }
 
 // Mouse helper functions

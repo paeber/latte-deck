@@ -27,9 +27,11 @@
 #define LATTE_USB_PRODUCT "Arduino Leonardo"
 #define LATTE_USB_SERIAL "LATTEDECK1"
 
-// Report IDs are not used for Windows compatibility
-// Each HID interface uses report ID 0 (default)
-// This prevents the "default report ID" error on Windows
+// Report IDs for different HID functionalities
+// Each top-level collection needs its own report ID for Windows compatibility
+#define LATTE_REPORT_ID_POWER_DEVICE  1
+#define LATTE_REPORT_ID_MOUSE         2
+#define LATTE_REPORT_ID_KEYBOARD      3
 
 // HID interface configuration
 // Used for internal reference only - actual USB configuration
