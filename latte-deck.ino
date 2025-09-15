@@ -1,11 +1,18 @@
-// Ensure USB MCU flags for NicoHood on LattePanda Leonardo
-#ifndef USBCON
-#define USBCON 1
-#endif
+/*
+ * LatteDeck.ino
+ *
+ * This is the main file for the LatteDeck sketch.
+*/
+
+// CRITICAL: Include NicoHood HID library FIRST to ensure it takes priority
+// over any HID functionality in the DFRobot LPUPS library
 #include <HID-Project.h>
 #include <HID-Settings.h>
 
+// Include our custom composite HID system
 #include "composite_hid.h"
+
+// Include UPS and gamepad modules (these may include DFRobot library)
 #include "ups_ctrl.h"
 #include "gamepad.h"
 

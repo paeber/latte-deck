@@ -1,10 +1,19 @@
 # Composite HID Solution for LatteDeck
 
 ## Problem
-The original LatteDeck implementation had a conflict between the UPS battery reporting (Power Device HID) and the gamepad functionality (Mouse/Keyboard HID). Both were trying to use the same HID-Project library and append their own descriptors, causing conflicts where one would overwrite the other.
+The original LatteDeck implementation had multiple HID conflicts:
+
+1. **UPS vs Gamepad Conflict**: Both UPS battery reporting (Power Device HID) and gamepad functionality (Mouse/Keyboard HID) were trying to use the same HID-Project library and append their own descriptors, causing conflicts where one would overwrite the other.
+
+2. **DFRobot vs NicoHood HID Conflict**: The [DFRobot LPUPS library](https://github.com/DFRobot/DFRobot_LPUPS) includes its own HID implementation (based on HIDPowerDevice library), which conflicts with the [NicoHood HID-Project library](https://github.com/NicoHood/HID) that we want to use for enhanced functionality.
 
 ## Solution
-Implemented a **Composite HID Device** that combines both functionalities into a single, unified HID descriptor. This approach prevents conflicts by defining all HID interfaces within one device descriptor.
+Implemented a **Composite HID Device** that combines both functionalities into a single, unified HID descriptor. This approach prevents conflicts by:
+
+1. **Prioritizing NicoHood HID Library**: Ensures the [NicoHood HID-Project library](https://github.com/NicoHood/HID) takes precedence over the DFRobot library's HID implementation
+2. **Disabling DFRobot HID**: Sets `UPS_HID_NICOHOOD = 0` to disable the DFRobot library's HID functionality
+3. **Single Unified Descriptor**: Defines all HID interfaces within one device descriptor to prevent conflicts
+4. **Include Order Control**: Ensures NicoHood HID headers are included before any DFRobot library headers
 
 ## Architecture
 
@@ -35,10 +44,11 @@ Implemented a **Composite HID Device** that combines both functionalities into a
 #### Modified Files
 - `gamepad.h` - Updated to use CompositeHID instead of HID-Project directly
 - `gamepad.cpp` - Replaced all Mouse/Keyboard calls with CompositeHID equivalents
-- `latte-deck.ino` - Added CompositeHID::begin() call in setup()
-- `upsDef.h` - Updated to use CompositeHID directly instead of PowerHID wrapper
+- `latte-deck.ino` - Added CompositeHID::begin() call in setup() and prioritized NicoHood HID includes
+- `upsDef.h` - Disabled DFRobot HID (`UPS_HID_NICOHOOD = 0`) and updated to use CompositeHID directly
 - `ups_utils.cpp` - Removed PowerHID::begin() call (handled by CompositeHID::begin())
-- `ups_ctrl.cpp` - Updated to use CompositeHID functions directly
+- `ups_ctrl.cpp` - Updated to use CompositeHID functions directly, removed conditional compilation
+- `composite_hid.h` - Added comments about NicoHood HID library priority
 
 #### Removed Files
 - `power_hid.h` - No longer needed (functionality moved to CompositeHID)
@@ -100,7 +110,10 @@ To verify the solution works:
 
 ## Technical Notes
 
-- Uses NicoHood's HID-Project library as the underlying framework
-- Maintains compatibility with existing DFRobot LPUPS library approach
+- **Prioritizes NicoHood's HID-Project library** as the underlying framework over DFRobot's HID implementation
+- **Disables DFRobot HID functionality** by setting `UPS_HID_NICOHOOD = 0` to prevent conflicts
+- **Controls include order** to ensure NicoHood HID headers are loaded before DFRobot library headers
+- Maintains compatibility with DFRobot LPUPS library for I2C communication only
 - Follows USB HID specification for composite devices
 - Report IDs are carefully chosen to avoid conflicts with standard HID devices
+- Uses only the hardware communication features of the DFRobot library (I2C, battery reading)

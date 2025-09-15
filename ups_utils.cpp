@@ -55,11 +55,8 @@ byte iFullChargeCapacity = 100;
 
 void initPowerDevice(void)
 {
-#if UPS_HID_NICOHOOD
-  // CompositeHID::begin() is called from main setup()
-#else
-  // No HID Power Device: keep only Serial reporting and LEDs
-#endif
+  // HID functionality is handled by CompositeHID::begin() in main setup()
+  // This function is kept for compatibility but does nothing
 }
 
 void printChargeData(void)

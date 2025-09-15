@@ -2,11 +2,15 @@
 #define COMPOSITE_HID_H
 
 #include <Arduino.h>
+
+// CRITICAL: Include NicoHood HID library to ensure it takes priority
+// over any HID functionality in the DFRobot LPUPS library
 #include <HID-Project.h>
 #include <HID-Settings.h>
 
 // Composite HID device that combines UPS Power Device and Gamepad functionality
 // This prevents HID descriptor conflicts by using a single unified descriptor
+// and ensures NicoHood HID library is used instead of DFRobot's HID implementation
 
 namespace CompositeHID {
   

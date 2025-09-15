@@ -234,17 +234,11 @@ void loopUPS()
   if ((iPresentStatus != iPreviousStatus) || (iRemaining != iPrevRemaining) ||
     (iRunTimeToEmpty != iPrevRunTimeToEmpty) || (iIntTimer > MIN_UPDATE_INTERVAL)) {
 
-#if UPS_HID_NICOHOOD
-  // Send minimal CompositeHID Power reports
+  // Send CompositeHID Power reports
   CompositeHID::sendPowerRemaining(iRemaining);
   if (bDischarging) CompositeHID::sendPowerRuntime(iRunTimeToEmpty);
   iRes = CompositeHID::sendPowerStatus(iPresentStatus);
   pinMode(UPS_BLUE_LED, OUTPUT);
-#else
-    // HID reporting disabled; just toggle LED to indicate update
-    iRes = 0;
-    pinMode(UPS_BLUE_LED, OUTPUT);
-#endif
 
     iIntTimer = 0;                          // Reset reporting interval timer
     lastRunUPS = currentMillis;             

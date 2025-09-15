@@ -5,10 +5,10 @@
 
 #include <Arduino.h>
 
-// Set to 1 if/when a NicoHood custom HID Power Device is implemented.
-// When 0, UPS works (I2C + LEDs + Serial) without exposing a HID Battery device.
+// Disable DFRobot library's HID functionality to prevent conflicts
+// We use our own CompositeHID system instead
 #ifndef UPS_HID_NICOHOOD
-#define UPS_HID_NICOHOOD 1
+#define UPS_HID_NICOHOOD 0
 #endif
 
 /**
@@ -64,13 +64,12 @@ extern uint16_t iPresentStatus;   // Now and previous device status.
 // Initialize HID reporting (stubbed when UPS_HID_NICOHOOD == 0)
 void initPowerDevice(void);
 
-#if UPS_HID_NICOHOOD
+// Always use CompositeHID for HID functionality
 #include "composite_hid.h"
 // Map old names to CompositeHID helpers for minimal intrusion
 #define HID_PD_REMAININGCAPACITY   CompositeHID::REPORT_ID_POWER_REMAINING
 #define HID_PD_RUNTIMETOEMPTY      CompositeHID::REPORT_ID_POWER_RUNTIME
 #define HID_PD_PRESENTSTATUS       CompositeHID::REPORT_ID_POWER_STATUS
-#endif
 void printChargeData(void);
 void printChargeDataCompact(void);
 void printChargeDataCompactWithLimiter(void);
