@@ -1,4 +1,5 @@
 #include "gamepad.h"
+#include "config.h"
 
 
 // Right
@@ -162,7 +163,7 @@ void loopGamepad()
     unsigned long currentMillis = millis();
     if (currentMillis - lastPrint >= 500) {
       lastPrint = currentMillis;
-      char buf[96];
+      char buf[DEBUG_BUFFER_SIZE]; // Configurable buffer size
       snprintf(buf, sizeof(buf),
            "R Joy Y:%6d | R Joy X:%6d | L Joy Y:%6d | L Joy X:%6d",
            vertValueR, horzValueR, vertValueL, horzValueL);

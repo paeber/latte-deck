@@ -1,5 +1,6 @@
 #include <DFRobot_LPUPS.h>
 #include "upsDef.h"
+#include "config.h"
 
 uint8_t regBuf[DATA_LEN_MAX] = { 0 };
 DFRobot_LPUPS_I2C::sChargerStatus0_t chargerStatus0;
@@ -12,7 +13,7 @@ uint16_t CMPINVoltage = 0, inputCurrent = 0;
 uint16_t batteryVoltage = 0, cellVoltage = 0, systemVoltage = 0, maxChargeVoltage = 0;
 bool bCharging, bACPresent, bDischarging; // Whether charging, AC power present, discharging
 
-char outputBuf[512]; // Print buffer
+char outputBuf[OUTPUT_BUFFER_SIZE]; // Print buffer - configurable size
 
 // String constants
 const char STRING_DEVICE_CHEMISTRY[] PROGMEM = "Li-ion";   // Li-ion

@@ -20,11 +20,8 @@
 #include "ups_ctrl.h"
 #include "gamepad.h"
 
-//#define DEBUG_PRINT_UPS 1 // Uncomment to enable debug prints
-#define DEBUG_PRINT_GAMEPAD 1 // Uncomment to enable debug prints
-
-#define ENABLE_MOUSE_KEYBOARD 1
-#define ENABLE_HID_POWER_DEVICE 1
+// Include configuration
+#include "config.h"
 
 int upsStatus = -1;
 int gamepadStatus = -1;
@@ -67,7 +64,7 @@ void loop() {
   }
   #endif
 
-  #ifdef ENABLE_MOUSE_KEYBOARD
+  #if ENABLE_MOUSE_KEYBOARD
   loopGamepad();
   #endif
 }

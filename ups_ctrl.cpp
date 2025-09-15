@@ -36,12 +36,18 @@ int setupUPS(void)
   delay(5000);
   Serial.println("UPS init"); //Avoid serial port not working
 
-  // Init the sensor
+  // Init the sensor with improved error handling
   int tryCount = 0;
+  const int maxRetries = 5;
+  
   while (NO_ERR != LPUPS.begin(THREE_BATTERIES_UPS_PID)) {
-    Serial.println("Communication with device failed, please check connection");
+    Serial.print("Communication with device failed, attempt ");
+    Serial.print(tryCount + 1);
+    Serial.print("/");
+    Serial.println(maxRetries);
+    
     tryCount++;
-    if (tryCount > 3) {
+    if (tryCount >= maxRetries) {
       Serial.println("Max retries reached, giving up");
       return 1;
     }
