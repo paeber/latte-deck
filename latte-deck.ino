@@ -9,6 +9,9 @@
 #include <HID-Project.h>
 #include <HID-Settings.h>
 
+// Include USB configuration for proper device recognition
+#include "usb_config.h"
+
 // Include our custom composite HID system
 #include "composite_hid.h"
 

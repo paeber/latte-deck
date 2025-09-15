@@ -37,7 +37,7 @@ namespace CompositeHID {
   
   // Gamepad functions
   int sendGamepadReport(uint8_t buttons, int8_t x, int8_t y, int8_t z, int8_t rz);
-  int sendMouseReport(int8_t x, int8_t y, uint8_t buttons);
+  int sendMouseReport(int8_t x, int8_t y, uint8_t buttons, int8_t wheel = 0);
   int sendKeyboardReport(uint8_t modifiers, uint8_t key1, uint8_t key2, uint8_t key3, uint8_t key4, uint8_t key5, uint8_t key6);
   
   // Mouse and Keyboard helper functions

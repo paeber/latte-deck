@@ -112,8 +112,68 @@ To verify the solution works:
 
 - **Prioritizes NicoHood's HID-Project library** as the underlying framework over DFRobot's HID implementation
 - **Disables DFRobot HID functionality** by setting `UPS_HID_NICOHOOD = 0` to prevent conflicts
+- **Requires manual removal** of `HID.c` and `HID.h` files from DFRobot library to prevent compilation conflicts
 - **Controls include order** to ensure NicoHood HID headers are loaded before DFRobot library headers
 - Maintains compatibility with DFRobot LPUPS library for I2C communication only
 - Follows USB HID specification for composite devices
 - Report IDs are carefully chosen to avoid conflicts with standard HID devices
 - Uses only the hardware communication features of the DFRobot library (I2C, battery reading)
+
+## Windows Detection Issues and Fixes
+
+### Problem: Keyboard and Mouse Not Automatically Detected by Windows
+
+The original implementation had several issues that prevented Windows from properly recognizing the keyboard and mouse functionality:
+
+1. **Mouse Descriptor Issues:**
+   - Missing scroll wheel support in the HID descriptor
+   - Incorrect report structure (3 bytes instead of 4)
+   - Missing proper wheel axis definition
+
+2. **Keyboard Descriptor Issues:**
+   - Incorrect logical maximum for key codes (101 instead of 255)
+   - Missing proper key array structure
+   - Incomplete modifier key handling
+
+3. **USB Device Recognition Issues:**
+   - Missing proper USB device descriptor configuration
+   - No initial report sending to establish device enumeration
+
+### Solution: Fixed HID Descriptor and USB Configuration
+
+#### Mouse Descriptor Fixes:
+- Added scroll wheel support (`0x09, 0x38` - Usage (Wheel))
+- Updated report structure to 4 bytes (buttons, x, y, wheel)
+- Fixed report count to 3 for X, Y, and Wheel axes
+
+#### Keyboard Descriptor Fixes:
+- Changed logical maximum from 101 to 255 for proper key code range
+- Updated usage maximum to 255 to support all standard key codes
+- Maintained proper 6-key array structure
+
+#### USB Configuration:
+- Added `usb_config.h` with proper device descriptor settings
+- Implemented initial report sending in `CompositeHID::begin()`
+- Added proper device enumeration sequence
+
+### Files Modified:
+- `composite_hid.cpp` - Fixed HID descriptor and report functions
+- `composite_hid.h` - Updated function signatures
+- `usb_config.h` - New USB configuration file
+- `latte-deck.ino` - Added USB configuration include
+
+### Testing on Windows:
+After these fixes, the device should be properly recognized by Windows as a composite HID device with:
+- Power Device functionality (battery status)
+- Gamepad functionality (joystick input)
+- Mouse functionality (cursor movement, clicks, scroll wheel)
+- Keyboard functionality (key presses)
+
+## Important Installation Note
+
+The DFRobot LPUPS library includes its own HID implementation files (`HID.c` and `HID.h`) that conflict with the NicoHood HID-Project library. To resolve this:
+
+1. Install both libraries through Arduino IDE Library Manager
+2. Navigate to your Arduino libraries folder: `~/Arduino/libraries/DFRobot_LPUPS/`
+3. Delete or rename the `HID.c` and `HID.h` files
+4. This allows the NicoHood HID-Project library to be used exclusively for all HID functionality

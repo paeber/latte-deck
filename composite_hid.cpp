@@ -85,10 +85,11 @@ static const uint8_t _compositeHidReportDescriptor[] PROGMEM = {
   0x05, 0x01,             // Usage Page (Generic Desktop)
   0x09, 0x30,             // Usage (X)
   0x09, 0x31,             // Usage (Y)
+  0x09, 0x38,             // Usage (Wheel)
   0x15, 0x81,             // Logical Minimum (-127)
   0x25, 0x7F,             // Logical Maximum (127)
   0x75, 0x08,             // Report Size (8)
-  0x95, 0x02,             // Report Count (2)
+  0x95, 0x03,             // Report Count (3)
   0x81, 0x06,             // Input (Data,Var,Rel,No Wrap,Linear,Preferred State,No Null Position)
   0xC0,                   // End Collection
   0xC0,                   // End Collection
@@ -125,8 +126,25 @@ static HIDSubDescriptor compositeNode(_compositeHidReportDescriptor, sizeof(_com
 
 void CompositeHID::begin()
 {
+  // Initialize USB HID with proper configuration
+  // This ensures Windows recognizes the device as a composite HID device
+  
   // Register the composite HID descriptor
   HID().AppendDescriptor(&compositeNode);
+  
+  // Send initial reports to establish the device
+  // This helps Windows properly enumerate the device
+  delay(100);
+  
+  // Send empty reports to initialize all interfaces
+  sendPowerRemaining(0);
+  sendPowerRuntime(0);
+  sendPowerStatus(0);
+  sendGamepadReport(0, 0, 0, 0, 0);
+  sendMouseReport(0, 0, 0, 0);
+  sendKeyboardReport(0, 0, 0, 0, 0, 0, 0);
+  
+  delay(100);
 }
 
 // Power Device functions
@@ -159,12 +177,13 @@ int CompositeHID::sendGamepadReport(uint8_t buttons, int8_t x, int8_t y, int8_t 
   return HID().SendReport(REPORT_ID_GAMEPAD, report, sizeof(report));
 }
 
-int CompositeHID::sendMouseReport(int8_t x, int8_t y, uint8_t buttons)
+int CompositeHID::sendMouseReport(int8_t x, int8_t y, uint8_t buttons, int8_t wheel)
 {
-  uint8_t report[3];
+  uint8_t report[4];
   report[0] = buttons;
   report[1] = x;
   report[2] = y;
+  report[3] = wheel;
   
   return HID().SendReport(REPORT_ID_MOUSE, report, sizeof(report));
 }
@@ -187,17 +206,17 @@ int CompositeHID::sendKeyboardReport(uint8_t modifiers, uint8_t key1, uint8_t ke
 // Mouse helper functions
 void CompositeHID::moveMouse(int8_t x, int8_t y)
 {
-  sendMouseReport(x, y, 0);
+  sendMouseReport(x, y, 0, 0);
 }
 
 void CompositeHID::clickMouse(uint8_t button)
 {
-  sendMouseReport(0, 0, button);
+  sendMouseReport(0, 0, button, 0);
 }
 
 void CompositeHID::releaseMouse(uint8_t button)
 {
-  sendMouseReport(0, 0, 0);
+  sendMouseReport(0, 0, 0, 0);
 }
 
 // Keyboard helper functions

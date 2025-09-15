@@ -19,10 +19,14 @@ A composite HID device that provides both UPS battery status reporting and gamep
 1. Install the required libraries through Arduino IDE Library Manager:
    - Search for "HID-Project" by NicoHood
    - Search for "DFRobot_LPUPS" by DFRobot
-2. Clone this repository to your Arduino sketches folder
-3. Open `latte-deck.ino` in Arduino IDE
-4. Select your LattePanda Leonardo board
-5. Upload the sketch
+2. **Important**: Remove conflicting HID files from DFRobot library:
+   - Navigate to your Arduino libraries folder (usually `~/Arduino/libraries/DFRobot_LPUPS/`)
+   - Delete or rename `HID.c` and `HID.h` files to prevent conflicts with NicoHood HID library
+   - This is necessary because DFRobot library includes its own HID implementation that conflicts with NicoHood's
+3. Clone this repository to your Arduino sketches folder
+4. Open `latte-deck.ino` in Arduino IDE
+5. Select your LattePanda Leonardo board
+6. Upload the sketch
 
 ## Hardware Requirements
 - LattePanda Leonardo (ATmega32U4 based)
