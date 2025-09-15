@@ -6,13 +6,13 @@
 // USB Device Descriptor Configuration for Composite HID Device
 // This ensures Windows properly recognizes the device as a composite HID device
 
-// USB Device Descriptor
+// USB Device Descriptor - Use standard Arduino Leonardo IDs for better driver compatibility
 #define USB_VID 0x2341  // Arduino LLC Vendor ID
-#define USB_PID 0x8036  // Leonardo Product ID (or custom PID for composite device)
+#define USB_PID 0x8036  // Leonardo Product ID (use standard Leonardo PID for driver compatibility)
 
-// USB Device Configuration
-#define USB_MANUFACTURER_STRING "LatteDeck"
-#define USB_PRODUCT_STRING "LatteDeck Composite HID"
+// USB Device Configuration - Use standard Arduino strings for better Windows recognition
+#define USB_MANUFACTURER_STRING "Arduino LLC"
+#define USB_PRODUCT_STRING "Arduino Leonardo"
 #define USB_SERIAL_STRING "8400310725"
 
 // USB Interface Configuration

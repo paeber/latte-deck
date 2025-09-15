@@ -107,15 +107,19 @@ void CompositeHID::begin()
   // Register the composite HID descriptor
   HID().AppendDescriptor(&compositeNode);
   
-  // Send initial reports to establish the device
-  // This helps Windows properly enumerate the device
-  delay(100);
+  // Give Windows time to enumerate the device
+  delay(500);
   
-  // Send empty reports to initialize all interfaces
+  // Send initial reports to establish all interfaces
+  // This helps Windows properly recognize each HID interface
   sendPowerRemaining(0);
+  delay(50);
   sendPowerRuntime(0);
+  delay(50);
   sendPowerStatus(0);
+  delay(50);
   sendMouseReport(0, 0, 0, 0);
+  delay(50);
   sendKeyboardReport(0, 0, 0, 0, 0, 0, 0);
   
   delay(100);

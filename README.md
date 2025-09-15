@@ -42,4 +42,8 @@ The project uses a composite HID device approach to combine multiple HID functio
 The joystick input is converted to mouse movement and keyboard key presses for better Windows compatibility. This prevents HID descriptor conflicts that would occur with separate HID devices.
 
 ## Documentation
-See [docs/composite_hid_solution.md](docs/composite_hid_solution.md) for detailed technical information about the HID implementation.
+- [docs/composite_hid_solution.md](docs/composite_hid_solution.md) - Detailed technical information about the HID implementation
+- [docs/windows_driver_troubleshooting.md](docs/windows_driver_troubleshooting.md) - Windows driver installation and troubleshooting guide
+
+## Troubleshooting
+If you encounter "This device cannot start. (Code 10)" errors in Windows Device Manager, see the [Windows Driver Troubleshooting Guide](docs/windows_driver_troubleshooting.md) for step-by-step solutions.
