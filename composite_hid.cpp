@@ -2,10 +2,11 @@
 
 using namespace CompositeHID;
 
-// Composite HID Report Descriptor that combines Power Device and Gamepad functionality
-// This single descriptor prevents conflicts between multiple HID devices
-static const uint8_t _compositeHidReportDescriptor[] PROGMEM = {
-  // Power Device Usage Page (0x84)
+// Separate HID Report Descriptors for better Windows compatibility
+// This approach uses separate descriptors for each HID interface
+
+// Power Device HID Descriptor
+static const uint8_t _powerDeviceDescriptor[] PROGMEM = {
   0x05, 0x84,             // Usage Page (Power Device)
   0x09, 0x20,             // Usage (Battery Strength)
   0xA1, 0x01,             // Collection (Application)
@@ -37,9 +38,11 @@ static const uint8_t _compositeHidReportDescriptor[] PROGMEM = {
   0x75, 0x10,             // Report Size 16
   0x95, 0x01,             // Report Count 1
   0x81, 0x02,             // Input (Data,Var,Abs)
-  0xC0,                   // End Collection
+  0xC0                    // End Collection
+};
 
-  // Mouse Usage Page (0x01 - Generic Desktop)
+// Mouse HID Descriptor
+static const uint8_t _mouseDescriptor[] PROGMEM = {
   0x05, 0x01,             // Usage Page (Generic Desktop)
   0x09, 0x02,             // Usage (Mouse)
   0xA1, 0x01,             // Collection (Application)
@@ -67,9 +70,11 @@ static const uint8_t _compositeHidReportDescriptor[] PROGMEM = {
   0x95, 0x03,             // Report Count (3)
   0x81, 0x06,             // Input (Data,Var,Rel,No Wrap,Linear,Preferred State,No Null Position)
   0xC0,                   // End Collection
-  0xC0,                   // End Collection
+  0xC0                    // End Collection
+};
 
-  // Keyboard Usage Page (0x07 - Keyboard/Keypad)
+// Keyboard HID Descriptor
+static const uint8_t _keyboardDescriptor[] PROGMEM = {
   0x05, 0x07,             // Usage Page (Keyboard/Keypad)
   0x09, 0x06,             // Usage (Keyboard)
   0xA1, 0x01,             // Collection (Application)
@@ -96,16 +101,20 @@ static const uint8_t _compositeHidReportDescriptor[] PROGMEM = {
   0xC0                    // End Collection
 };
 
-// Create the HID sub-descriptor
-static HIDSubDescriptor compositeNode(_compositeHidReportDescriptor, sizeof(_compositeHidReportDescriptor));
+// Create separate HID sub-descriptors for each interface
+static HIDSubDescriptor powerDeviceNode(_powerDeviceDescriptor, sizeof(_powerDeviceDescriptor));
+static HIDSubDescriptor mouseNode(_mouseDescriptor, sizeof(_mouseDescriptor));
+static HIDSubDescriptor keyboardNode(_keyboardDescriptor, sizeof(_keyboardDescriptor));
 
 void CompositeHID::begin()
 {
-  // Initialize USB HID with proper configuration
-  // This ensures Windows recognizes the device as a composite HID device
+  // Initialize USB HID with separate descriptors for better Windows compatibility
+  // This approach registers each HID interface separately
   
-  // Register the composite HID descriptor
-  HID().AppendDescriptor(&compositeNode);
+  // Register each HID descriptor separately
+  HID().AppendDescriptor(&powerDeviceNode);
+  HID().AppendDescriptor(&mouseNode);
+  HID().AppendDescriptor(&keyboardNode);
   
   // Give Windows time to enumerate the device
   delay(500);

@@ -16,8 +16,8 @@
 #define USB_SERIAL_STRING "8400310725"
 
 // USB Interface Configuration
-#define USB_INTERFACE_COUNT 1  // Single interface for composite HID
-#define USB_ENDPOINT_COUNT 1   // Single endpoint for HID reports
+#define USB_INTERFACE_COUNT 4  // Multiple interfaces: CDC (Serial), Power Device, Mouse, Keyboard
+#define USB_ENDPOINT_COUNT 4   // Multiple endpoints: CDC + one for each HID interface
 
 // HID Configuration
 #define HID_REPORT_DESCRIPTOR_SIZE 122  // Size of our composite HID descriptor (122 bytes)
