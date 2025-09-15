@@ -15,7 +15,7 @@ static const uint8_t _powerDeviceDescriptor[] PROGMEM = {
   0x26, 0x64, 0x00,       // Logical Max 100
   0x75, 0x08,             // Report Size 8
   0x95, 0x01,             // Report Count 1
-  0x85, REPORT_ID_POWER_REMAINING, // Report ID
+  0x85, LATTE_REPORT_ID_POWER_REMAINING, // Report ID
   0x81, 0x02,             // Input (Data,Var,Abs)
   
   // Runtime to Empty
@@ -24,7 +24,7 @@ static const uint8_t _powerDeviceDescriptor[] PROGMEM = {
   0x26, 0xFF, 0x7F,       // Logical Max 32767
   0x75, 0x10,             // Report Size 16
   0x95, 0x01,             // Report Count 1
-  0x85, REPORT_ID_POWER_RUNTIME, // Report ID
+  0x85, LATTE_REPORT_ID_POWER_RUNTIME, // Report ID
   0x81, 0x02,             // Input (Data,Var,Abs)
   
   // Present Status
@@ -33,7 +33,7 @@ static const uint8_t _powerDeviceDescriptor[] PROGMEM = {
   0x26, 0xFF, 0x7F,       // Logical Max 32767
   0x75, 0x10,             // Report Size 16
   0x95, 0x01,             // Report Count 1
-  0x85, REPORT_ID_POWER_STATUS, // Report ID
+  0x85, LATTE_REPORT_ID_POWER_STATUS, // Report ID
   0x81, 0x02,             // Input (Data,Var,Abs)
   
   0xC0                    // End Collection
@@ -134,9 +134,9 @@ void CompositeHID::begin()
   // Initialize USB HID with separate descriptors for better Windows compatibility
   
   // Ensure proper USB configuration
-  USBDevice.setManufacturer(USB_MANUFACTURER);
-  USBDevice.setProduct(USB_PRODUCT);
-  USBDevice.setSerialNumber(USB_SERIAL);
+  USBDevice.setManufacturer(LATTE_USB_MANUFACTURER);
+  USBDevice.setProduct(LATTE_USB_PRODUCT);
+  USBDevice.setSerialNumber(LATTE_USB_SERIAL);
   
   // Register each HID descriptor separately
   HID().AppendDescriptor(&powerDeviceNode);
@@ -169,17 +169,17 @@ void CompositeHID::begin()
 // Power Device functions
 int CompositeHID::sendPowerRemaining(uint8_t percentage)
 {
-  return HID().SendReport(REPORT_ID_POWER_REMAINING, &percentage, sizeof(percentage));
+  return HID().SendReport(LATTE_REPORT_ID_POWER_REMAINING, &percentage, sizeof(percentage));
 }
 
 int CompositeHID::sendPowerRuntime(uint16_t seconds)
 {
-  return HID().SendReport(REPORT_ID_POWER_RUNTIME, &seconds, sizeof(seconds));
+  return HID().SendReport(LATTE_REPORT_ID_POWER_RUNTIME, &seconds, sizeof(seconds));
 }
 
 int CompositeHID::sendPowerStatus(uint16_t status)
 {
-  return HID().SendReport(REPORT_ID_POWER_STATUS, &status, sizeof(status));
+  return HID().SendReport(LATTE_REPORT_ID_POWER_STATUS, &status, sizeof(status));
 }
 
 // Mouse functions
@@ -191,7 +191,7 @@ int CompositeHID::sendMouseReport(int8_t x, int8_t y, uint8_t buttons, int8_t wh
   report[2] = y;
   report[3] = wheel;
   
-  return HID().SendReport(REPORT_ID_MOUSE, report, sizeof(report));
+  return HID().SendReport(LATTE_REPORT_ID_MOUSE, report, sizeof(report));
 }
 
 int CompositeHID::sendKeyboardReport(uint8_t modifiers, uint8_t key1, uint8_t key2, uint8_t key3, uint8_t key4, uint8_t key5, uint8_t key6)
@@ -206,7 +206,7 @@ int CompositeHID::sendKeyboardReport(uint8_t modifiers, uint8_t key1, uint8_t ke
   report[6] = key5;
   report[7] = key6;
   
-  return HID().SendReport(REPORT_ID_KEYBOARD, report, sizeof(report));
+  return HID().SendReport(LATTE_REPORT_ID_KEYBOARD, report, sizeof(report));
 }
 
 // Mouse helper functions

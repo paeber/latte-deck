@@ -36,9 +36,9 @@ void setup() {
     Serial.println("Starting LatteDeck...");
     
     // Initialize USB device configuration
-    USBDevice.setManufacturer(USB_MANUFACTURER);
-    USBDevice.setProduct(USB_PRODUCT);
-    USBDevice.setSerialNumber(USB_SERIAL);
+    USBDevice.setManufacturer(LATTE_USB_MANUFACTURER);
+    USBDevice.setProduct(LATTE_USB_PRODUCT);
+    USBDevice.setSerialNumber(LATTE_USB_SERIAL);
     
     // Initialize the composite HID device first
     CompositeHID::begin();
