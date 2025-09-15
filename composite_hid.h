@@ -7,25 +7,14 @@
 // over any HID functionality in the DFRobot LPUPS library
 #include <HID-Project.h>
 #include <HID-Settings.h>
+#include "usb_config.h"
 
-// Composite HID device that combines UPS Power Device and Gamepad functionality
-// This prevents HID descriptor conflicts by using a single unified descriptor
-// and ensures NicoHood HID library is used instead of DFRobot's HID implementation
+// Composite HID device that combines UPS Power Device, Mouse, and Keyboard functionality
+// This implementation creates a properly structured composite device with separate interfaces
+// for better Windows compatibility and ensures all HID functions are recognized
 
 namespace CompositeHID {
   
-  // Report IDs for different functionalities
-  enum : uint8_t {
-    // Power Device reports (UPS battery status)
-    REPORT_ID_POWER_REMAINING = 1,
-    REPORT_ID_POWER_RUNTIME = 2, 
-    REPORT_ID_POWER_STATUS = 3,
-    
-    // Mouse and Keyboard reports (no gamepad - Windows expects separate devices)
-    REPORT_ID_MOUSE = 4,
-    REPORT_ID_KEYBOARD = 5
-  };
-
   // Initialize the composite HID device
   void begin();
   
@@ -34,7 +23,7 @@ namespace CompositeHID {
   int sendPowerRuntime(uint16_t seconds);
   int sendPowerStatus(uint16_t status);
   
-  // Mouse and Keyboard functions (no gamepad - use mouse/keyboard directly)
+  // Mouse and Keyboard functions
   int sendMouseReport(int8_t x, int8_t y, uint8_t buttons, int8_t wheel = 0);
   int sendKeyboardReport(uint8_t modifiers, uint8_t key1, uint8_t key2, uint8_t key3, uint8_t key4, uint8_t key5, uint8_t key6);
   

@@ -1,54 +1,53 @@
 #include "composite_hid.h"
+#include "usb_config.h"
 
 using namespace CompositeHID;
 
-// Separate HID Report Descriptors for better Windows compatibility
-// This approach uses separate descriptors for each HID interface
-
-// Power Device HID Descriptor
+// Power Device HID Descriptor - Optimized for Windows compatibility
 static const uint8_t _powerDeviceDescriptor[] PROGMEM = {
   0x05, 0x84,             // Usage Page (Power Device)
-  0x09, 0x20,             // Usage (Battery Strength)
+  0x09, 0x01,             // Usage (Power Device)
   0xA1, 0x01,             // Collection (Application)
-  0x85, REPORT_ID_POWER_REMAINING,  // Report ID
+  
+  // Battery Remaining Capacity
+  0x09, 0x20,             // Usage (Battery Strength)
   0x15, 0x00,             // Logical Min 0
   0x26, 0x64, 0x00,       // Logical Max 100
   0x75, 0x08,             // Report Size 8
   0x95, 0x01,             // Report Count 1
+  0x85, REPORT_ID_POWER_REMAINING, // Report ID
   0x81, 0x02,             // Input (Data,Var,Abs)
-  0xC0,                   // End Collection
   
-  0x05, 0x84,             // Usage Page (Power Device)
+  // Runtime to Empty
   0x09, 0x44,             // Usage (RunTimeToEmpty)
-  0xA1, 0x01,             // Collection (Application)
-  0x85, REPORT_ID_POWER_RUNTIME,    // Report ID
   0x15, 0x00,             // Logical Min 0
   0x26, 0xFF, 0x7F,       // Logical Max 32767
   0x75, 0x10,             // Report Size 16
   0x95, 0x01,             // Report Count 1
+  0x85, REPORT_ID_POWER_RUNTIME, // Report ID
   0x81, 0x02,             // Input (Data,Var,Abs)
-  0xC0,                   // End Collection
   
-  0x05, 0x84,             // Usage Page (Power Device)
+  // Present Status
   0x09, 0x16,             // Usage (PresentStatus)
-  0xA1, 0x01,             // Collection (Application)
-  0x85, REPORT_ID_POWER_STATUS,     // Report ID
   0x15, 0x00,             // Logical Min 0
   0x26, 0xFF, 0x7F,       // Logical Max 32767
   0x75, 0x10,             // Report Size 16
   0x95, 0x01,             // Report Count 1
+  0x85, REPORT_ID_POWER_STATUS, // Report ID
   0x81, 0x02,             // Input (Data,Var,Abs)
+  
   0xC0                    // End Collection
 };
 
-// Mouse HID Descriptor
+// Mouse HID Descriptor - Standard HID mouse with wheel
 static const uint8_t _mouseDescriptor[] PROGMEM = {
   0x05, 0x01,             // Usage Page (Generic Desktop)
   0x09, 0x02,             // Usage (Mouse)
   0xA1, 0x01,             // Collection (Application)
-  0x85, REPORT_ID_MOUSE,            // Report ID
   0x09, 0x01,             // Usage (Pointer)
   0xA1, 0x00,             // Collection (Physical)
+  
+  // Mouse buttons
   0x05, 0x09,             // Usage Page (Button)
   0x19, 0x01,             // Usage Minimum (Button 1)
   0x29, 0x03,             // Usage Maximum (Button 3)
@@ -57,9 +56,13 @@ static const uint8_t _mouseDescriptor[] PROGMEM = {
   0x95, 0x03,             // Report Count (3)
   0x75, 0x01,             // Report Size (1)
   0x81, 0x02,             // Input (Data,Var,Abs)
+  
+  // Padding
   0x95, 0x01,             // Report Count (1)
   0x75, 0x05,             // Report Size (5)
-  0x81, 0x01,             // Input (Const,Array,Abs,No Wrap,Linear,Preferred State,No Null Position)
+  0x81, 0x01,             // Input (Const,Array,Abs)
+  
+  // X, Y, and Wheel movement
   0x05, 0x01,             // Usage Page (Generic Desktop)
   0x09, 0x30,             // Usage (X)
   0x09, 0x31,             // Usage (Y)
@@ -68,17 +71,19 @@ static const uint8_t _mouseDescriptor[] PROGMEM = {
   0x25, 0x7F,             // Logical Maximum (127)
   0x75, 0x08,             // Report Size (8)
   0x95, 0x03,             // Report Count (3)
-  0x81, 0x06,             // Input (Data,Var,Rel,No Wrap,Linear,Preferred State,No Null Position)
-  0xC0,                   // End Collection
-  0xC0                    // End Collection
+  0x81, 0x06,             // Input (Data,Var,Rel)
+  
+  0xC0,                   // End Collection (Physical)
+  0xC0                    // End Collection (Application)
 };
 
-// Keyboard HID Descriptor
+// Keyboard HID Descriptor - Standard boot protocol keyboard
 static const uint8_t _keyboardDescriptor[] PROGMEM = {
-  0x05, 0x07,             // Usage Page (Keyboard/Keypad)
+  0x05, 0x01,             // Usage Page (Generic Desktop)
   0x09, 0x06,             // Usage (Keyboard)
   0xA1, 0x01,             // Collection (Application)
-  0x85, REPORT_ID_KEYBOARD,         // Report ID
+  
+  // Modifier keys (shift, ctrl, alt, etc)
   0x05, 0x07,             // Usage Page (Keyboard/Keypad)
   0x19, 0xE0,             // Usage Minimum (224)
   0x29, 0xE7,             // Usage Maximum (231)
@@ -87,17 +92,35 @@ static const uint8_t _keyboardDescriptor[] PROGMEM = {
   0x75, 0x01,             // Report Size (1)
   0x95, 0x08,             // Report Count (8)
   0x81, 0x02,             // Input (Data,Var,Abs)
+  
+  // Reserved byte
   0x95, 0x01,             // Report Count (1)
   0x75, 0x08,             // Report Size (8)
-  0x81, 0x01,             // Input (Const,Array,Abs,No Wrap,Linear,Preferred State,No Null Position)
+  0x81, 0x01,             // Input (Const,Array,Abs)
+  
+  // LED output report
+  0x95, 0x05,             // Report Count (5)
+  0x75, 0x01,             // Report Size (1)
+  0x05, 0x08,             // Usage Page (LEDs)
+  0x19, 0x01,             // Usage Minimum (Num Lock)
+  0x29, 0x05,             // Usage Maximum (Kana)
+  0x91, 0x02,             // Output (Data,Var,Abs)
+  
+  // LED padding
+  0x95, 0x01,             // Report Count (1)
+  0x75, 0x03,             // Report Size (3)
+  0x91, 0x01,             // Output (Const,Array,Abs)
+  
+  // Key array (6 keys)
   0x95, 0x06,             // Report Count (6)
   0x75, 0x08,             // Report Size (8)
   0x15, 0x00,             // Logical Minimum (0)
-  0x25, 0x65,             // Logical Maximum (101)
+  0x26, 0xFF, 0x00,       // Logical Maximum (255)
   0x05, 0x07,             // Usage Page (Keyboard/Keypad)
   0x19, 0x00,             // Usage Minimum (0)
-  0x29, 0x65,             // Usage Maximum (101)
-  0x81, 0x00,             // Input (Data,Array,Abs,No Wrap,Linear,Preferred State,No Null Position)
+  0x29, 0xFF,             // Usage Maximum (255)
+  0x81, 0x00,             // Input (Data,Array,Abs)
+  
   0xC0                    // End Collection
 };
 
@@ -109,7 +132,11 @@ static HIDSubDescriptor keyboardNode(_keyboardDescriptor, sizeof(_keyboardDescri
 void CompositeHID::begin()
 {
   // Initialize USB HID with separate descriptors for better Windows compatibility
-  // This approach registers each HID interface separately
+  
+  // Ensure proper USB configuration
+  USBDevice.setManufacturer(USB_MANUFACTURER);
+  USBDevice.setProduct(USB_PRODUCT);
+  USBDevice.setSerialNumber(USB_SERIAL);
   
   // Register each HID descriptor separately
   HID().AppendDescriptor(&powerDeviceNode);
@@ -121,16 +148,21 @@ void CompositeHID::begin()
   
   // Send initial reports to establish all interfaces
   // This helps Windows properly recognize each HID interface
-  sendPowerRemaining(0);
-  delay(50);
-  sendPowerRuntime(0);
-  delay(50);
-  sendPowerStatus(0);
-  delay(50);
-  sendMouseReport(0, 0, 0, 0);
-  delay(50);
-  sendKeyboardReport(0, 0, 0, 0, 0, 0, 0);
   
+  // First, establish power device interface
+  sendPowerRemaining(100);
+  delay(50);
+  sendPowerRuntime(3600);
+  delay(50);
+  sendPowerStatus(0x0080); // Battery present bit
+  delay(100);
+  
+  // Next, establish mouse interface
+  sendMouseReport(0, 0, 0, 0);
+  delay(100);
+  
+  // Finally, establish keyboard interface
+  sendKeyboardReport(0, 0, 0, 0, 0, 0, 0);
   delay(100);
 }
 
