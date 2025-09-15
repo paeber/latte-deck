@@ -5,7 +5,7 @@
 // Right
 int vertZeroR, horzZeroR;  // Stores the initial value of each axis, usually around 512
 int vertValueR, horzValueR;  // Stores current analog output of each axis
-const int sensitivityR = 160;  // Higher sensitivity value = slower mouse, should be <= about 500
+const int sensitivityR = 500;  // Higher sensitivity value = slower mouse, should be <= about 500
 int mouseClickFlagR = 0;
 //int invertMouse = 1;        //Invert joystick based on orientation
 int invertMouseR = -1;         //Noninverted joystick based on orientation
@@ -87,9 +87,9 @@ void loopGamepad()
     }
   
     if (vertValueR != 0)
-      CompositeHID::moveMouse(0, (invertMouseR * sgn(vertValueR) * 0.1 * (abs(pow(vertValueR /sensitivityR, 4))))); // move mouse on y axis
+      CompositeHID::moveMouse(0, (invertMouseR * sgn(vertValueR) * 0.01 * (abs(pow(vertValueR, 2)) / sensitivityR))); // move mouse on y axis
     if (horzValueR != 0)
-      CompositeHID::moveMouse((invertMouseR * sgn(horzValueR) * 0.1 * (abs(pow(horzValueR / sensitivityR, 4)))), 0); // move mouse on x axis
+      CompositeHID::moveMouse((invertMouseR * sgn(horzValueR) * 0.01 * (abs(pow(horzValueR, 2)) / sensitivityR)), 0); // move mouse on x axis
   
     if ((digitalRead(PIN_JOYSTICK_R_SEL) == 0) && (!mouseClickFlagR))  // if the joystick button is pressed
     {
