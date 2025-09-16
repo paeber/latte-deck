@@ -94,12 +94,12 @@ void loopGamepad()
     if ((digitalRead(PIN_JOYSTICK_R_SEL) == 0) && (!mouseClickFlagR))  // if the joystick button is pressed
     {
       mouseClickFlagR = 1;
-      CompositeHID::clickMouse(0x01);  // click the left button down
+      CompositeHID::pressMouse(MOUSE_LEFT);  // press the left button down
     }
     else if ((digitalRead(PIN_JOYSTICK_R_SEL)) && (mouseClickFlagR)) // if the joystick button is not pressed
     {
       mouseClickFlagR = 0;
-      CompositeHID::releaseMouse(0x01);  // release the left button
+      CompositeHID::releaseMouse(MOUSE_LEFT);  // release the left button
     }
 
    
@@ -174,8 +174,8 @@ void loopGamepad()
     
     } else {
     if (!gamepadDisabled){
-      CompositeHID::releaseMouse(0x01);
-      CompositeHID::releaseMouse(0x02);
+      CompositeHID::releaseMouse(MOUSE_LEFT);
+      CompositeHID::releaseMouse(MOUSE_RIGHT);
       CompositeHID::moveMouse(0, 0);
       mouseClickFlagR = 0;
 
