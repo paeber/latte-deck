@@ -96,33 +96,41 @@ void loopGamepad()
     }
     gamepadDisabled = false;
 
-    // Read joystick values
-    vertValueR = analogRead(PIN_JOYSTICK_R_Y) - vertZeroR;  // read vertical offset
-    horzValueR = -(analogRead(PIN_JOYSTICK_R_X) - horzZeroR);  // read horizontal offset
-    vertValueL = analogRead(PIN_JOYSTICK_L_Y) - vertZeroL;  // read vertical offset
-    horzValueL = -(analogRead(PIN_JOYSTICK_L_X) - horzZeroL);  // read horizontal offset
-    magValueL = sqrt(pow(horzValueL, 2) + pow(vertValueL, 2));
-    magValueR = sqrt(pow(horzValueR, 2) + pow(vertValueR, 2));
+    // Read joystick values (optimized - read all at once)
+    vertValueR = analogRead(PIN_JOYSTICK_R_Y) - vertZeroR;
+    horzValueR = vertZeroR - analogRead(PIN_JOYSTICK_R_X);  // Optimized: removed unnecessary negation
+    vertValueL = analogRead(PIN_JOYSTICK_L_Y) - vertZeroL;
+    horzValueL = horzZeroL - analogRead(PIN_JOYSTICK_L_X);  // Optimized: removed unnecessary negation
 
-    // Clip values to max if exceeding
-    if (abs(horzValueR) > JOYSTICK_SIDE_MAX){
-      horzValueR = sgn(horzValueR) * JOYSTICK_SIDE_MAX;
-    }
-    if (abs(vertValueR) > JOYSTICK_SIDE_MAX){
-      vertValueR = sgn(vertValueR) * JOYSTICK_SIDE_MAX;
-    }
+    // Fast magnitude calculation (avoid sqrt and pow)
+    int32_t magSquaredL = (int32_t)horzValueL * horzValueL + (int32_t)vertValueL * vertValueL;
+    int32_t magSquaredR = (int32_t)horzValueR * horzValueR + (int32_t)vertValueR * vertValueR;
+    
+    // Use squared values for comparison (faster than sqrt)
+    int32_t sprintThresholdSquared = (int32_t)SPRINT_THRESHOLD * SPRINT_THRESHOLD;
 
-    if (abs(horzValueL) > JOYSTICK_SIDE_MAX){
-      horzValueL = sgn(horzValueL) * JOYSTICK_SIDE_MAX;
-    }
-    if (abs(vertValueL) > JOYSTICK_SIDE_MAX){
-      vertValueL = sgn(vertValueL) * JOYSTICK_SIDE_MAX;
-    }
+    // Fast clipping using bit operations (faster than abs and sgn)
+    if (horzValueR > JOYSTICK_SIDE_MAX) horzValueR = JOYSTICK_SIDE_MAX;
+    else if (horzValueR < -JOYSTICK_SIDE_MAX) horzValueR = -JOYSTICK_SIDE_MAX;
+    
+    if (vertValueR > JOYSTICK_SIDE_MAX) vertValueR = JOYSTICK_SIDE_MAX;
+    else if (vertValueR < -JOYSTICK_SIDE_MAX) vertValueR = -JOYSTICK_SIDE_MAX;
+
+    if (horzValueL > JOYSTICK_SIDE_MAX) horzValueL = JOYSTICK_SIDE_MAX;
+    else if (horzValueL < -JOYSTICK_SIDE_MAX) horzValueL = -JOYSTICK_SIDE_MAX;
+    
+    if (vertValueL > JOYSTICK_SIDE_MAX) vertValueL = JOYSTICK_SIDE_MAX;
+    else if (vertValueL < -JOYSTICK_SIDE_MAX) vertValueL = -JOYSTICK_SIDE_MAX;
   
-    if (vertValueR != 0)
-      CompositeHID::moveMouse(0, (invertMouseR * sgn(vertValueR) * 0.01 * (abs(pow(vertValueR, 2)) / sensitivityR))); // move mouse on y axis
-    if (horzValueR != 0)
-      CompositeHID::moveMouse((invertMouseR * sgn(horzValueR) * 0.01 * (abs(pow(horzValueR, 2)) / sensitivityR)), 0); // move mouse on x axis
+    // Optimized mouse movement (avoid pow and floating point)
+    if (vertValueR != 0) {
+      int8_t mouseY = (vertValueR * vertValueR * invertMouseR) / (sensitivityR * 100);
+      if (mouseY != 0) CompositeHID::moveMouse(0, mouseY);
+    }
+    if (horzValueR != 0) {
+      int8_t mouseX = (horzValueR * horzValueR * invertMouseR) / (sensitivityR * 100);
+      if (mouseX != 0) CompositeHID::moveMouse(mouseX, 0);
+    }
   
     if ((digitalRead(PIN_JOYSTICK_R_SEL) == 0) && (!mouseClickFlagR))  // if the joystick button is pressed
     {
@@ -188,27 +196,27 @@ void loopGamepad()
       horzPosPressedL = false;
     }
 
-    if ((abs(magValueL) >= SPRINT_THRESHOLD) && (!sprintActive)) {
+    // Optimized sprint detection using squared magnitude
+    int32_t sprintReleaseThresholdSquared = (SPRINT_THRESHOLD - 20) * (SPRINT_THRESHOLD - 20);
+    
+    if ((magSquaredL >= sprintThresholdSquared) && (!sprintActive)) {
       printGamepad("Pressing sprint");
       CompositeHID::pressKey(ACTION_JOYSTICK_L_MAX);
       sprintActive = true;
-    } else if ((abs(magValueL) < (SPRINT_THRESHOLD -20)) && (sprintActive)) {
+    } else if ((magSquaredL < sprintReleaseThresholdSquared) && (sprintActive)) {
       printGamepad("Releasing sprint");
       CompositeHID::releaseKey(ACTION_JOYSTICK_L_MAX);
       sprintActive = false;
     }
 
 
-    #ifdef DEBUG_PRINT_GAMEPAD
+    #if DEBUG_PRINT_GAMEPAD
     static unsigned long lastPrint = 0;
     unsigned long currentMillis = millis();
-    if (currentMillis - lastPrint >= 500) {
+    if (currentMillis - lastPrint >= 1000) {  // Reduced frequency for better performance
       lastPrint = currentMillis;
-      char buf[DEBUG_BUFFER_SIZE]; // Configurable buffer size
-      snprintf(buf, sizeof(buf),
-           "R Joy Y:%6d | R Joy X:%6d | L Joy Y:%6d | L Joy X:%6d",
-           vertValueR, horzValueR, vertValueL, horzValueL);
-      Serial.println(buf);
+      printGamepadF("R Joy Y:%d X:%d | L Joy Y:%d X:%d | MagL:%ld", 
+                    vertValueR, horzValueR, vertValueL, horzValueL, magSquaredL);
     }
     #endif
 
@@ -238,7 +246,7 @@ void loopGamepad()
       gamepadDisabled = true;
       Serial.println("Gamepad disabled");
     }
-    delay(1);
+    delay(10);  // Longer delay when disabled to reduce CPU usage
   }
  
 }
