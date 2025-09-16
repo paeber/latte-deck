@@ -29,6 +29,14 @@ template <typename T> int sgn(T val) {
   return (T(0) < val) - (val < T(0));
 }
 
+void printGamepad(char* msg){
+  #ifdef DEBUG_PRINT_GAMEPAD
+  Serial.print("Gamepad: ");
+  Serial.print(msg);
+  Serial.println();
+  #endif
+}
+
 void setupGamepad()
 {
   pinMode(PIN_GAMEPAD_ENABLE, INPUT_PULLUP);
@@ -70,6 +78,8 @@ void loopGamepad()
     horzValueR = -(analogRead(PIN_JOYSTICK_R_X) - horzZeroR);  // read horizontal offset
     vertValueL = analogRead(PIN_JOYSTICK_L_Y) - vertZeroL;  // read vertical offset
     horzValueL = -(analogRead(PIN_JOYSTICK_L_X) - horzZeroL);  // read horizontal offset
+    magValueL = sqrt(pow(horzValueL, 2) + pow(vertValueL, 2));
+    magValueR = sqrt(pow(horzValueR, 2) + pow(vertValueR, 2));
 
     // Clip values to max if exceeding
     if (abs(horzValueR) > JOYSTICK_SIDE_MAX){
@@ -116,16 +126,19 @@ void loopGamepad()
     }
 
     if ((vertValueL >= 200) && (!vertPosPressedL)){
+      printGamepad("Pressing up");
       CompositeHID::pressKey(ACTION_JOYSTICK_L_UP);
       CompositeHID::releaseKey(ACTION_JOYSTICK_L_DOWN);
       vertPosPressedL = true;
       vertNegPressedL = false;
     } else if ((vertValueL <= -200) && (!vertNegPressedL)) {
+      printGamepad("Pressing down");
       CompositeHID::pressKey(ACTION_JOYSTICK_L_DOWN);
       CompositeHID::releaseKey(ACTION_JOYSTICK_L_UP);
       vertNegPressedL = true;
       vertPosPressedL = false;
     } else if ((vertPosPressedL && vertValueL < 200) || (vertNegPressedL && vertValueL > (-200))) {
+      printGamepad("Releasing up and down");
       CompositeHID::releaseKey(ACTION_JOYSTICK_L_UP);
       CompositeHID::releaseKey(ACTION_JOYSTICK_L_DOWN);
       vertNegPressedL = false;
@@ -133,26 +146,31 @@ void loopGamepad()
     }
 
     if ((horzValueL >= 200) && (!horzPosPressedL)){
+      printGamepad("Pressing left");
       CompositeHID::pressKey(ACTION_JOYSTICK_L_LEFT);
       CompositeHID::releaseKey(ACTION_JOYSTICK_L_RIGHT);
       horzPosPressedL = true;
       horzNegPressedL = false;
     } else if ((horzValueL <= -200) && (!horzNegPressedL)) {
+      printGamepad("Pressing right");
       CompositeHID::pressKey(ACTION_JOYSTICK_L_RIGHT);
       CompositeHID::releaseKey(ACTION_JOYSTICK_L_LEFT);
       horzNegPressedL = true;
       horzPosPressedL = false;
     } else if ((horzPosPressedL && horzValueL < 200) || (horzNegPressedL && horzValueL > (-200))) {
+      printGamepad("Releasing left and right");
       CompositeHID::releaseKey(ACTION_JOYSTICK_L_LEFT);
       CompositeHID::releaseKey(ACTION_JOYSTICK_L_RIGHT);
       horzNegPressedL = false;
       horzPosPressedL = false;
     }
 
-    if (((abs(horzValueL) >= SPRINT_THRESHOLD) || (abs(vertValueL) >= SPRINT_THRESHOLD)) && (!sprintActive)) {
+    if ((abs(magValueL) >= SPRINT_THRESHOLD) && (!sprintActive)) {
+      printGamepad("Pressing sprint");
       CompositeHID::pressKey(ACTION_JOYSTICK_L_MAX);
       sprintActive = true;
-    } else if (((abs(horzValueL) < (SPRINT_THRESHOLD -20)) && (abs(vertValueL) < (SPRINT_THRESHOLD -20))) && (sprintActive)) {
+    } else if ((abs(magValueL) < (SPRINT_THRESHOLD -20)) && (sprintActive)) {
+      printGamepad("Releasing sprint");
       CompositeHID::releaseKey(ACTION_JOYSTICK_L_MAX);
       sprintActive = false;
     }

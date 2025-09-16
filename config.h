@@ -86,12 +86,8 @@
 // ============================================================================
 
 // Debug configuration - uncomment to enable
-//#define DEBUG_PRINT_UPS 1
-//#define DEBUG_PRINT_GAMEPAD 1
-
-// Feature enable flags
-#define ENABLE_MOUSE_KEYBOARD       1
-#define ENABLE_HID_POWER_DEVICE     1
+#define DEBUG_PRINT_UPS 1
+#define DEBUG_PRINT_GAMEPAD 1
 
 // ============================================================================
 // Memory Configuration
