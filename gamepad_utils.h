@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 #include "config.h"
+#include "gamepad_pinout.h"
+#include "gamepad_assignment.h"
 
 // ============================================================================
 // Joystick Data Structure

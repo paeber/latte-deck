@@ -1,6 +1,8 @@
 #include "gamepad.h"
 #include "gamepad_utils.h"
 #include "config.h"
+#include "gamepad_pinout.h"
+#include "gamepad_assignment.h"
 #include <stdarg.h>
 #include <HID-Project.h>
 

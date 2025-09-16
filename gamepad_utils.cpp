@@ -85,6 +85,11 @@ void processAxisMovement(JoystickData& joystick, int threshold) {
 // ============================================================================
 
 void handleButtonPress(int pin, int& flag, uint8_t key, const char* action) {
+    // Skip processing if action is ACTION_NONE
+    if (key == ACTION_NONE) {
+        return;
+    }
+    
     if ((digitalRead(pin) == 0) && (!flag)) {
         flag = 1;
         Keyboard.press(key);
@@ -106,30 +111,35 @@ void handleDirectionalKeys(JoystickData& joystick, uint8_t upKey, uint8_t downKe
                           uint8_t leftKey, uint8_t rightKey, int threshold) {
     // Handle vertical movement
     if (joystick.yPosPressed) {
-        Keyboard.press(upKey);
-        Keyboard.release(downKey);
+        if (upKey != ACTION_NONE) Keyboard.press(upKey);
+        if (downKey != ACTION_NONE) Keyboard.release(downKey);
     } else if (joystick.yNegPressed) {
-        Keyboard.press(downKey);
-        Keyboard.release(upKey);
+        if (downKey != ACTION_NONE) Keyboard.press(downKey);
+        if (upKey != ACTION_NONE) Keyboard.release(upKey);
     } else {
-        Keyboard.release(upKey);
-        Keyboard.release(downKey);
+        if (upKey != ACTION_NONE) Keyboard.release(upKey);
+        if (downKey != ACTION_NONE) Keyboard.release(downKey);
     }
     
     // Handle horizontal movement
     if (joystick.xPosPressed) {
-        Keyboard.press(leftKey);
-        Keyboard.release(rightKey);
+        if (leftKey != ACTION_NONE) Keyboard.press(leftKey);
+        if (rightKey != ACTION_NONE) Keyboard.release(rightKey);
     } else if (joystick.xNegPressed) {
-        Keyboard.press(rightKey);
-        Keyboard.release(leftKey);
+        if (rightKey != ACTION_NONE) Keyboard.press(rightKey);
+        if (leftKey != ACTION_NONE) Keyboard.release(leftKey);
     } else {
-        Keyboard.release(leftKey);
-        Keyboard.release(rightKey);
+        if (leftKey != ACTION_NONE) Keyboard.release(leftKey);
+        if (rightKey != ACTION_NONE) Keyboard.release(rightKey);
     }
 }
 
 void handleSprintKey(JoystickData& joystick, uint8_t sprintKey, int threshold, bool& active) {
+    // Skip processing if action is ACTION_NONE
+    if (sprintKey == ACTION_NONE) {
+        return;
+    }
+    
     if ((abs(joystick.magnitude) >= threshold) && (!active)) {
         Keyboard.press(sprintKey);
         active = true;
