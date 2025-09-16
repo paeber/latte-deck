@@ -21,7 +21,15 @@ The original implementation had issues with Windows battery recognition because 
 #ifndef UPS_HID_NICOHOOD
 #define UPS_HID_NICOHOOD 0
 #endif
+
+// Configure Report IDs for composite HID device
+#include "hid_config.h"  // Must be included before HID-Project.h
 ```
+
+The `hid_config.h` file configures Report IDs for all HID interfaces:
+- UPS Power Device: Report ID 1
+- Mouse: Report ID 2  
+- Keyboard: Report ID 3
 
 ### 2. Initialization Order
 
@@ -67,8 +75,9 @@ Keyboard.release(KEY_W);
 
 ### 1. **Proven Windows Compatibility**
 - Custom UPS HID implementation follows USB HID Power Device specification
-- Proper HID descriptor without Report ID conflicts for Windows recognition
-- Eliminates "Report ID declaration found outside of top level collection" errors
+- Proper Report ID configuration for all HID interfaces (UPS: ID 1, Mouse: ID 2, Keyboard: ID 3)
+- Eliminates "Default report ID is only allowed for devices with one top level collection" errors
+- No additional drivers required - uses standard Windows HID drivers
 
 ### 2. **Simplified Code**
 - Removed custom CompositeHID wrapper

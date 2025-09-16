@@ -2,6 +2,10 @@
 #define CONFIG_H
 
 #include <Arduino.h>
+
+// Include HID configuration first to set up Report IDs
+#include "hid_config.h"
+
 #include <HID-Project.h>
 #include <HID-Settings.h>
 

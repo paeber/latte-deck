@@ -36,8 +36,13 @@
 
 #### Compilation Errors
 - **Remove DFRobot HID files**: Delete `HID.c` and `HID.h` from DFRobot library folder
-- **Check Include Order**: Ensure NicoHood HID library is included first
+- **Check Include Order**: Ensure `hid_config.h` is included before `HID-Project.h`
 - **Verify Library Versions**: Use latest versions of both libraries
+
+#### Windows HID Errors
+- **"Default report ID is only allowed for devices with one top level collection"**: Ensure `hid_config.h` is included before `HID-Project.h`
+- **"Report ID declaration found outside of top level collection"**: Check HID descriptor structure in `ups_hid.cpp`
+- **Device not recognized**: Verify Report ID configuration matches HID descriptors
 
 ### Hardware Issues
 

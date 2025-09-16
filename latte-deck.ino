@@ -5,6 +5,9 @@
  * It provides a composite HID device with UPS battery reporting, mouse, and keyboard functionality.
  */
 
+// Include HID configuration first to set up Report IDs
+#include "hid_config.h"
+
 // Include DFRobot LPUPS library for battery reporting
 #include <DFRobot_LPUPS.h>
 
