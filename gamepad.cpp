@@ -75,14 +75,14 @@ void loopGamepad()
     gamepadDisabled = false;
 
     // Read and process joystick values
-    readJoystick(leftJoystick);
-    readJoystick(rightJoystick);
+    readJoystick(leftJoystick, JOYSTICK_L_INVERT_X, JOYSTICK_L_INVERT_Y);
+    readJoystick(rightJoystick, JOYSTICK_R_INVERT_X, JOYSTICK_R_INVERT_Y);
     
     // Process axis movements for directional keys
     processAxisMovement(leftJoystick, 200);
     
     // Handle mouse movement (right joystick)
-    processMouseMovement(rightJoystick, JOYSTICK_MOUSE_SENSITIVITY, JOYSTICK_R_INVERT);
+    processMouseMovement(rightJoystick, JOYSTICK_MOUSE_SENSITIVITY);
     
     // Handle joystick button presses
     handleButtonPress(PIN_JOYSTICK_R_SEL, rightJoystick.selFlag, MOUSE_LEFT, "right joystick button");

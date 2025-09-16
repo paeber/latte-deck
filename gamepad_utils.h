@@ -26,7 +26,7 @@ struct JoystickData {
 
 // Joystick Management
 void initializeJoystick(JoystickData& joystick, int xPin, int yPin, int selPin);
-void readJoystick(JoystickData& joystick);
+void readJoystick(JoystickData& joystick, int invertX, int invertY);
 void calibrateJoystick(JoystickData& joystick);
 
 // Axis Processing
@@ -40,7 +40,7 @@ void handleDirectionalKeys(JoystickData& joystick, uint8_t upKey, uint8_t downKe
 void handleSprintKey(JoystickData& joystick, uint8_t sprintKey, int threshold, bool& active);
 
 // Mouse Control
-void processMouseMovement(JoystickData& joystick, int sensitivity, int invert);
+void processMouseMovement(JoystickData& joystick, int sensitivity);
 
 // Key Release Management
 void releaseAllKeys();

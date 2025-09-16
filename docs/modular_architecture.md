@@ -41,9 +41,10 @@ struct JoystickData {
 - Reads initial axis values for calibration
 - Stores zero-point values for offset calculation
 
-#### `readJoystick(JoystickData& joystick)`
+#### `readJoystick(JoystickData& joystick, int invertX, int invertY)`
 - Reads current analog values from joystick pins
 - Calculates offset from zero-point
+- Applies axis inversion based on invertX and invertY parameters
 - Applies axis clipping to prevent overflow
 - Calculates movement magnitude
 
@@ -77,9 +78,9 @@ struct JoystickData {
 
 ### 4. Mouse Control Functions
 
-#### `processMouseMovement(JoystickData& joystick, int sensitivity, int invert)`
+#### `processMouseMovement(JoystickData& joystick, int sensitivity)`
 - Converts joystick movement to mouse cursor movement
-- Applies sensitivity scaling and inversion
+- Applies sensitivity scaling (inversion handled in readJoystick)
 - Uses squared value for non-linear response
 
 ### 5. Key Release Management Functions

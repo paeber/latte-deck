@@ -31,9 +31,9 @@ void calibrateJoystick(JoystickData& joystick) {
     joystick.yZero = analogRead(joystick.yPin);
 }
 
-void readJoystick(JoystickData& joystick) {
-    joystick.yValue = -(analogRead(joystick.yPin) - joystick.yZero);  // Invert Y-axis
-    joystick.xValue = analogRead(joystick.xPin) - joystick.xZero;     // Keep X-axis normal
+void readJoystick(JoystickData& joystick, int invertX, int invertY) {
+    joystick.yValue = (analogRead(joystick.yPin) - joystick.yZero) * invertY;
+    joystick.xValue = (analogRead(joystick.xPin) - joystick.xZero) * invertX;
     joystick.magnitude = calculateMagnitude(joystick.xValue, joystick.yValue);
     
     // Clip values to maximum
@@ -159,12 +159,12 @@ void handleSprintKey(JoystickData& joystick, uint8_t sprintKey, int threshold, b
 // Mouse Control Functions
 // ============================================================================
 
-void processMouseMovement(JoystickData& joystick, int sensitivity, int invert) {
+void processMouseMovement(JoystickData& joystick, int sensitivity) {
     if (joystick.yValue != 0) {
-        Mouse.move(0, (invert * sgn(joystick.yValue) * 0.01 * (abs(pow(joystick.yValue, 2)) / sensitivity)));
+        Mouse.move(0, (sgn(joystick.yValue) * 0.01 * (abs(pow(joystick.yValue, 2)) / sensitivity)));
     }
     if (joystick.xValue != 0) {
-        Mouse.move((invert * sgn(joystick.xValue) * 0.01 * (abs(pow(joystick.xValue, 2)) / sensitivity)), 0);
+        Mouse.move((sgn(joystick.xValue) * 0.01 * (abs(pow(joystick.xValue, 2)) / sensitivity)), 0);
     }
 }
 

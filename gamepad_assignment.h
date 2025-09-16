@@ -4,8 +4,6 @@
 #include <Arduino.h>
 #include <HID-Project.h>
 
-#define HID_CUSTOM_LAYOUT
-#define LAYOUT_GERMAN
 
 // ============================================================================
 // Gamepad Button Assignment Configuration
@@ -30,7 +28,7 @@
 #define ACTION_JOYSTICK_L_LEFT         'a'
 #define ACTION_JOYSTICK_L_RIGHT        'd'
 #define ACTION_JOYSTICK_L_PRESS        ' '         // Space character
-#define ACTION_JOYSTICK_L_MAX          KEY_E       // Sprint when moving joystick beyond threshold
+#define ACTION_JOYSTICK_L_MAX          'e'         // Sprint when moving joystick beyond threshold
 
 // ============================================================================
 // Left Button Actions
