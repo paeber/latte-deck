@@ -1,4 +1,5 @@
 #include "ups_hid.h"
+#include "usb_config.h"
 
 using namespace UPSHID;
 

@@ -29,8 +29,8 @@ unsigned long lastRunUPS = 0; // Time when last run in milis()
 const int numReadings = 20;   // Number of readings for the moving average
 int readings[numReadings];    // Array to store sensor readings
 int readIndex = 0;            // Current index in the array
-long total = 20*50;           // Sum of readings
-int average = 50;             // Calculated moving average
+long total = 20;              // Sum of readings
+int average = 0;              // Calculated moving average
 
 int setupUPS(void)
 {
