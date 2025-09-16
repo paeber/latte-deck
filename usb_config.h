@@ -29,15 +29,14 @@
 
 // Report IDs for different HID functionalities
 // Each top-level collection needs its own report ID for Windows compatibility
-#define LATTE_REPORT_ID_POWER_DEVICE  1
 #define LATTE_REPORT_ID_MOUSE         2
 #define LATTE_REPORT_ID_KEYBOARD      3
 
 // HID interface configuration
 // Used for internal reference only - actual USB configuration
 // is handled by the Arduino core based on the board selection
-#define LATTE_USB_INTERFACE_COUNT 3  // Power Device + Mouse + Keyboard
-#define LATTE_USB_ENDPOINT_COUNT 3   // One endpoint per interface
+#define LATTE_USB_INTERFACE_COUNT 2  // Mouse + Keyboard
+#define LATTE_USB_ENDPOINT_COUNT 2   // One endpoint per interface
 
 // HID class/subclass definitions
 #define LATTE_USB_CLASS_HID 0x03

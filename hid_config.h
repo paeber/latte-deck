@@ -8,7 +8,7 @@
 #include <HID-Settings.h>
 
 // Override HID-Project settings to enable Report IDs for composite devices
-// This is necessary when combining multiple HID interfaces (UPS + Mouse + Keyboard)
+// This is necessary when combining multiple HID interfaces (Mouse + Keyboard)
 
 // Enable Report IDs for Mouse interface
 #ifndef HID_MOUSE_REPORT_ID

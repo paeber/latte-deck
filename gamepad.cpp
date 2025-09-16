@@ -1,36 +1,24 @@
 #include "gamepad.h"
+#include "gamepad_utils.h"
 #include "config.h"
 #include <stdarg.h>
 #include <HID-Project.h>
 
+// ============================================================================
+// Global Variables
+// ============================================================================
 
-// Right
-int vertZeroR, horzZeroR;  // Stores the initial value of each axis, usually around 512
-int vertValueR, horzValueR;  // Stores current analog output of each axis
+// Joystick data structures
+JoystickData leftJoystick;
+JoystickData rightJoystick;
+
+// Mouse configuration
 const int sensitivityR = 500;  // Higher sensitivity value = slower mouse, should be <= about 500
-int mouseClickFlagR = 0;
-//int invertMouse = 1;        //Invert joystick based on orientation
-int invertMouseR = -1;         //Noninverted joystick based on orientation
-int invertJoystickLX = -1;
-int invertJoystickLY = -1;
+int invertMouseR = -1;         // Noninverted joystick based on orientation
 
-
-// Left
-int vertZeroL, horzZeroL;  // Stores the initial value of each axis, usually around 512
-int vertValueL, horzValueL;  // Stores current analog output of each axis
-float magValueL, magValueR;  // Magnitude of joystick movement
-bool vertPosPressedL = false;
-bool vertNegPressedL = false;
-bool horzPosPressedL = false;
-bool horzNegPressedL = false;
-bool sprintActive = false;
-int selFlagL = 0;
-
+// Gamepad state
 bool gamepadDisabled = false;
-
-template <typename T> int sgn(T val) {
-  return (T(0) < val) - (val < T(0));
-}
+bool sprintActive = false;
 
 void printGamepad(const char* msg){
   #if DEBUG_PRINT_GAMEPAD
@@ -64,27 +52,17 @@ void printGamepadF(const char* format, ...){
 void setupGamepad()
 {
   pinMode(PIN_GAMEPAD_ENABLE, INPUT_PULLUP);
-  //digitalWrite(PIN_GAMEPAD_ENABLE, HIGH);
   
-  // Right side
-  pinMode(PIN_JOYSTICK_R_X, INPUT);  
-  pinMode(PIN_JOYSTICK_R_Y, INPUT);
-  pinMode(PIN_JOYSTICK_R_SEL, INPUT_PULLUP);
-
-  // Left side
-  pinMode(PIN_JOYSTICK_L_X, INPUT);
-  pinMode(PIN_JOYSTICK_L_Y, INPUT);
-  pinMode(PIN_JOYSTICK_L_SEL, INPUT_PULLUP);
+  // Initialize joysticks
+  initializeJoystick(leftJoystick, PIN_JOYSTICK_L_X, PIN_JOYSTICK_L_Y, PIN_JOYSTICK_L_SEL);
+  initializeJoystick(rightJoystick, PIN_JOYSTICK_R_X, PIN_JOYSTICK_R_Y, PIN_JOYSTICK_R_SEL);
 
   delay(1000); // Wait a second to allow the joysticks to stabilize
+  
   // Calibrate joysticks
-  vertZeroR = analogRead(PIN_JOYSTICK_R_Y);  
-  horzZeroR = analogRead(PIN_JOYSTICK_R_X);
+  calibrateJoystick(leftJoystick);
+  calibrateJoystick(rightJoystick);
 
-  vertZeroL = analogRead(PIN_JOYSTICK_L_Y);
-  horzZeroL = analogRead(PIN_JOYSTICK_L_X);
-
-  // CompositeHID::begin() is called from main setup
   Serial.println("Gamepad ready");
 }
 
@@ -97,149 +75,59 @@ void loopGamepad()
     }
     gamepadDisabled = false;
 
-    // Read joystick values
-    vertValueR = analogRead(PIN_JOYSTICK_R_Y) - vertZeroR;  // read vertical offset
-    horzValueR = -(analogRead(PIN_JOYSTICK_R_X) - horzZeroR);  // read horizontal offset
-    vertValueL = analogRead(PIN_JOYSTICK_L_Y) - vertZeroL;  // read vertical offset
-    horzValueL = -(analogRead(PIN_JOYSTICK_L_X) - horzZeroL);  // read horizontal offset
-    magValueL = sqrt(pow(horzValueL, 2) + pow(vertValueL, 2));
-    magValueR = sqrt(pow(horzValueR, 2) + pow(vertValueR, 2));
+    // Read and process joystick values
+    readJoystick(leftJoystick);
+    readJoystick(rightJoystick);
+    
+    // Process axis movements for directional keys
+    processAxisMovement(leftJoystick, 200);
+    
+    // Handle mouse movement (right joystick)
+    processMouseMovement(rightJoystick, sensitivityR, invertMouseR);
+    
+    // Handle joystick button presses
+    handleButtonPress(PIN_JOYSTICK_R_SEL, rightJoystick.selFlag, MOUSE_LEFT, "right joystick button");
+    handleButtonPress(PIN_JOYSTICK_L_SEL, leftJoystick.selFlag, ACTION_JOYSTICK_L_PRESS, "left joystick button");
+    
+    // Handle directional keys (left joystick)
+    handleDirectionalKeys(leftJoystick, ACTION_JOYSTICK_L_UP, ACTION_JOYSTICK_L_DOWN, 
+                         ACTION_JOYSTICK_L_LEFT, ACTION_JOYSTICK_L_RIGHT, 200);
+    
+    // Handle sprint key
+    handleSprintKey(leftJoystick, ACTION_JOYSTICK_L_MAX, SPRINT_THRESHOLD, sprintActive);
 
-    // Clip values to max if exceeding
-    if (abs(horzValueR) > JOYSTICK_SIDE_MAX){
-      horzValueR = sgn(horzValueR) * JOYSTICK_SIDE_MAX;
-    }
-    if (abs(vertValueR) > JOYSTICK_SIDE_MAX){
-      vertValueR = sgn(vertValueR) * JOYSTICK_SIDE_MAX;
-    }
-
-    if (abs(horzValueL) > JOYSTICK_SIDE_MAX){
-      horzValueL = sgn(horzValueL) * JOYSTICK_SIDE_MAX;
-    }
-    if (abs(vertValueL) > JOYSTICK_SIDE_MAX){
-      vertValueL = sgn(vertValueL) * JOYSTICK_SIDE_MAX;
-    }
-  
-    if (vertValueR != 0)
-      Mouse.move(0, (invertMouseR * sgn(vertValueR) * 0.01 * (abs(pow(vertValueR, 2)) / sensitivityR))); // move mouse on y axis
-    if (horzValueR != 0)
-      Mouse.move((invertMouseR * sgn(horzValueR) * 0.01 * (abs(pow(horzValueR, 2)) / sensitivityR)), 0); // move mouse on x axis
-  
-    if ((digitalRead(PIN_JOYSTICK_R_SEL) == 0) && (!mouseClickFlagR))  // if the joystick button is pressed
-    {
-      mouseClickFlagR = 1;
-      Mouse.press(MOUSE_LEFT);  // press the left button down
-    }
-    else if ((digitalRead(PIN_JOYSTICK_R_SEL)) && (mouseClickFlagR)) // if the joystick button is not pressed
-    {
-      mouseClickFlagR = 0;
-      Mouse.release(MOUSE_LEFT);  // release the left button
-    }
-
-   
-  
-    if ((digitalRead(PIN_JOYSTICK_L_SEL) == 0) && (!selFlagL))  // if the joystick button is pressed
-    {
-      selFlagL = 1;
-      Keyboard.press(ACTION_JOYSTICK_L_PRESS);  // click the left button down
-    }
-    else if ((digitalRead(PIN_JOYSTICK_L_SEL)) && (selFlagL)) // if the joystick button is not pressed
-    {
-      selFlagL = 0;
-      Keyboard.release(ACTION_JOYSTICK_L_PRESS);  // release the left button
-    }
-
-    if ((vertValueL >= 200) && (!vertPosPressedL)){
-      printGamepad("Pressing up");
-      Keyboard.press(ACTION_JOYSTICK_L_UP);
-      Keyboard.release(ACTION_JOYSTICK_L_DOWN);
-      vertPosPressedL = true;
-      vertNegPressedL = false;
-    } else if ((vertValueL <= -200) && (!vertNegPressedL)) {
-      printGamepad("Pressing down");
-      Keyboard.press(ACTION_JOYSTICK_L_DOWN);
-      Keyboard.release(ACTION_JOYSTICK_L_UP);
-      vertNegPressedL = true;
-      vertPosPressedL = false;
-    } else if ((vertPosPressedL && vertValueL < 200) || (vertNegPressedL && vertValueL > (-200))) {
-      printGamepad("Releasing up and down");
-      Keyboard.release(ACTION_JOYSTICK_L_UP);
-      Keyboard.release(ACTION_JOYSTICK_L_DOWN);
-      vertNegPressedL = false;
-      vertPosPressedL = false;
-    }
-
-    if ((horzValueL >= 200) && (!horzPosPressedL)){
-      printGamepad("Pressing left");
-      Keyboard.press(ACTION_JOYSTICK_L_LEFT);
-      Keyboard.release(ACTION_JOYSTICK_L_RIGHT);
-      horzPosPressedL = true;
-      horzNegPressedL = false;
-    } else if ((horzValueL <= -200) && (!horzNegPressedL)) {
-      printGamepad("Pressing right");
-      Keyboard.press(ACTION_JOYSTICK_L_RIGHT);
-      Keyboard.release(ACTION_JOYSTICK_L_LEFT);
-      horzNegPressedL = true;
-      horzPosPressedL = false;
-    } else if ((horzPosPressedL && horzValueL < 200) || (horzNegPressedL && horzValueL > (-200))) {
-      printGamepad("Releasing left and right");
-      Keyboard.release(ACTION_JOYSTICK_L_LEFT);
-      Keyboard.release(ACTION_JOYSTICK_L_RIGHT);
-      horzNegPressedL = false;
-      horzPosPressedL = false;
-    }
-
-    if ((abs(magValueL) >= SPRINT_THRESHOLD) && (!sprintActive)) {
-      printGamepad("Pressing sprint");
-      Keyboard.press(ACTION_JOYSTICK_L_MAX);
-      sprintActive = true;
-    } else if ((abs(magValueL) < (SPRINT_THRESHOLD -20)) && (sprintActive)) {
-      printGamepad("Releasing sprint");
-      Keyboard.release(ACTION_JOYSTICK_L_MAX);
-      sprintActive = false;
-    }
-
-
+    // Debug output
     #ifdef DEBUG_PRINT_GAMEPAD
     static unsigned long lastPrint = 0;
     unsigned long currentMillis = millis();
     if (currentMillis - lastPrint >= 500) {
       lastPrint = currentMillis;
-      char buf[DEBUG_BUFFER_SIZE]; // Configurable buffer size
+      char buf[DEBUG_BUFFER_SIZE];
       snprintf(buf, sizeof(buf),
            "R Joy Y:%6d | R Joy X:%6d | L Joy Y:%6d | L Joy X:%6d",
-           vertValueR, horzValueR, vertValueL, horzValueL);
+           rightJoystick.yValue, rightJoystick.xValue, leftJoystick.yValue, leftJoystick.xValue);
       Serial.println(buf);
     }
     #endif
 
-    
-    } else {
+  } else {
     if (!gamepadDisabled){
-      Mouse.release(MOUSE_LEFT);
-      Mouse.release(MOUSE_RIGHT);
-      Mouse.move(0, 0);
-      mouseClickFlagR = 0;
-
-      Keyboard.release(ACTION_JOYSTICK_L_UP);
-      Keyboard.release(ACTION_JOYSTICK_L_DOWN);
-      Keyboard.release(ACTION_JOYSTICK_L_MAX);
-      Keyboard.release(ACTION_JOYSTICK_L_PRESS);
-      Keyboard.release(ACTION_BTN_L2);
-      Keyboard.release(ACTION_BTN_L3);
-      Keyboard.release(ACTION_BTN_L4);
-
-      Keyboard.release(ACTION_BTN_R2);
-      Keyboard.release(ACTION_BTN_R3);
-      Keyboard.release(ACTION_BTN_R4);
-
-      vertNegPressedL = false;
-      vertPosPressedL = false;
-      selFlagL = 0;
+      // Release all keys and mouse buttons when gamepad is disabled
+      releaseAllMouseButtons();
+      releaseAllKeys();
+      
+      // Reset joystick states
+      leftJoystick.yPosPressed = false;
+      leftJoystick.yNegPressed = false;
+      leftJoystick.xPosPressed = false;
+      leftJoystick.xNegPressed = false;
+      leftJoystick.selFlag = 0;
+      rightJoystick.selFlag = 0;
+      sprintActive = false;
+      
       gamepadDisabled = true;
       Serial.println("Gamepad disabled");
     }
     delay(1);
   }
- 
 }
