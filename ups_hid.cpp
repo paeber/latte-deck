@@ -63,6 +63,29 @@ void UPSHID::createReport(const UPSStatus& status) {
     last_report.battery_capacity = status.capacity_percent;
     last_report.battery_voltage = status.voltage_mV;
     
+    // Debug: Print HID report values and raw data
+    #if DEBUG_PRINT_UPS
+    Serial.print("HID Report - Voltage: ");
+    Serial.print(status.voltage_mV);
+    Serial.print(" mV, Current: ");
+    Serial.print(status.current_mA);
+    Serial.print(" mA, Capacity: ");
+    Serial.print(status.capacity_percent);
+    Serial.print("%, Charging: ");
+    Serial.print(status.is_charging ? "Yes" : "No");
+    Serial.println();
+    
+    // Print raw UPS data
+    Serial.print("UPS Raw Data: ");
+    for (int i = 0; i < 16; i++) {
+        Serial.print("0x");
+        if (status.raw_data[i] < 16) Serial.print("0");
+        Serial.print(status.raw_data[i], HEX);
+        Serial.print(" ");
+    }
+    Serial.println();
+    #endif
+    
     // Current: positive for charging, negative for discharging
     if (status.is_charging) {
         last_report.battery_current = abs(status.current_mA);
@@ -88,8 +111,20 @@ void UPSHID::createReport(const UPSStatus& status) {
     // Calculate estimated runtime to empty (rough estimation)
     if (status.current_mA > 0 && !status.is_charging) {
         // Runtime = (capacity_mAh / current_mA) * 60 minutes
-        uint16_t capacity_mAh = (status.capacity_percent * CELL_CAPACITY_mAh * N_CELLS_PACK) / 100;
+        // Note: Cells in series have same capacity as single cell (voltage adds, capacity doesn't)
+        uint16_t capacity_mAh = (status.capacity_percent * CELL_CAPACITY_mAh) / 100;
         last_report.runtime_to_empty = (capacity_mAh * 60) / status.current_mA;
+        
+        // Debug: Print runtime calculation
+        #if DEBUG_PRINT_UPS
+        Serial.print("Runtime Calc - Capacity: ");
+        Serial.print(capacity_mAh);
+        Serial.print(" mAh, Current: ");
+        Serial.print(status.current_mA);
+        Serial.print(" mA, Runtime: ");
+        Serial.print(last_report.runtime_to_empty);
+        Serial.println(" min");
+        #endif
     } else {
         last_report.runtime_to_empty = 0;
     }

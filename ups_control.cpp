@@ -2,6 +2,12 @@
 #include "ups_hid.h"
 #include "config.h"
 #include <DFRobot_LPUPS.h>
+#include "ups.h"
+
+// DFRobot LPUPS Register Definitions
+#define CS32_I2C_ADC_VBAT_REG         0x0CU   // VBAT: Full range: 2.88 V - 19.2 V, LSB 64 mV
+#define CS32_I2C_ADC_ICHG_REG         0x09U   // ICHG: Full range 8.128 A, LSB 64 mA
+#define CS32_I2C_ADC_IDCHG_REG        0x08U   // IDCHG: Full range: 32.512 A, LSB 256 mA
 
 // ============================================================================
 // Global UPS Control Instance
@@ -13,7 +19,7 @@ UPSControl ups;
 // DFRobot UPS Library Instance
 // ============================================================================
 
-DFRobot_LPUPS ups_library;
+DFRobot_LPUPS_I2C ups_library;
 
 // ============================================================================
 // UPSControl Class Implementation
@@ -70,25 +76,74 @@ bool UPSControl::readUPSData() {
     // Read chip data from UPS
     ups_library.getChipData(regBuf);
     
+    // Store raw data for debug output in HID report
+    memcpy(status.raw_data, regBuf, 16);
+    
     // Parse the data according to DFRobot LPUPS library format
-    // The exact format may vary - this is a typical implementation
-    if (regBuf[0] == 0x00 && regBuf[1] == 0x00) {
-        // No valid data
+    // Check if we have valid battery voltage data (VBAT register should not be 0)
+    // Note: When on battery power, charger status registers (0x00, 0x01) may be 0x00 0x00
+    // but battery voltage data is still valid
+    uint8_t vbat_raw = regBuf[CS32_I2C_ADC_VBAT_REG];
+    if (vbat_raw == 0x00) {
+        // No valid battery data - likely communication error
         status.is_connected = false;
         return false;
     }
     
-    // Extract voltage (typically in registers 2-3, in mV)
-    status.voltage_mV = (regBuf[2] << 8) | regBuf[3];
+    // Extract voltage using correct DFRobot LPUPS register format
+    // VBAT: Full range: 2.88 V - 19.2 V, LSB 64 mV
+    // Formula: 2880 + regBuf[CS32_I2C_ADC_VBAT_REG] * 64
+    // Note: vbat_raw already declared above
+    status.voltage_mV = 2880 + vbat_raw * 64;
+    if (status.voltage_mV == 2880) {
+        status.voltage_mV = 0; // No battery connected
+    }
     
-    // Extract current (typically in registers 4-5, in mA)
-    status.current_mA = (regBuf[4] << 8) | regBuf[5];
+    // Extract charge current (ICHG: Full range 8.128 A, LSB 64 mA)
+    uint8_t ichg_raw = regBuf[CS32_I2C_ADC_ICHG_REG];
+    uint16_t chargeCurrent = ichg_raw * 64;
     
-    // Extract temperature (typically in register 6, in Celsius)
-    status.temperature_celsius = regBuf[6];
+    // Extract discharge current (IDCHG: Full range: 32.512 A, LSB 256 mA)
+    uint8_t idchg_raw = regBuf[CS32_I2C_ADC_IDCHG_REG];
+    uint16_t dischargeCurrent = idchg_raw * 256;
     
-    // Determine charging status (typically bit in register 7)
-    status.is_charging = (regBuf[7] & 0x01) != 0;
+    // Debug: Print parsed values
+    #if DEBUG_PRINT_UPS
+    Serial.print("UPS Parsed - VBAT raw: 0x");
+    Serial.print(vbat_raw, HEX);
+    Serial.print(", Voltage: ");
+    Serial.print(status.voltage_mV);
+    Serial.print(" mV, ICHG raw: 0x");
+    Serial.print(ichg_raw, HEX);
+    Serial.print(", IDCHG raw: 0x");
+    Serial.print(idchg_raw, HEX);
+    Serial.print(", Charge: ");
+    Serial.print(chargeCurrent);
+    Serial.print(" mA, Discharge: ");
+    Serial.print(dischargeCurrent);
+    Serial.print(" mA, Charger Status: 0x");
+    Serial.print(regBuf[0], HEX);
+    Serial.print(" 0x");
+    Serial.print(regBuf[1], HEX);
+    Serial.println();
+    #endif
+    
+    // Determine if charging or discharging
+    if (chargeCurrent > 0) {
+        status.current_mA = chargeCurrent;
+        status.is_charging = true;
+    } else if (dischargeCurrent > 0) {
+        status.current_mA = dischargeCurrent;
+        status.is_charging = false;
+    } else {
+        // No current detected, but if we're on battery power (no AC), 
+        // we might still be discharging at a low rate
+        status.current_mA = 0;
+        status.is_charging = false;
+    }
+    
+    // Extract temperature (not directly available in LPUPS, use default)
+    status.temperature_celsius = 25; // Default room temperature
     
     // Calculate capacity percentage using our voltage-to-SoC function
     status.capacity_percent = socFromVoltage(status.voltage_mV, 

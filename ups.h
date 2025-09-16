@@ -8,13 +8,7 @@
 // ============================================================================
 
 // UPS Hardware Configuration
-#ifndef UPS_I2C_ADDRESS
-#define UPS_I2C_ADDRESS             0x55    // I2C address for UPS module
-#endif
-
-#ifndef THREE_BATTERIES_UPS_PID
-#define THREE_BATTERIES_UPS_PID     0X42AA  // Product ID for 3-battery UPS
-#endif
+// Note: UPS_I2C_ADDRESS and THREE_BATTERIES_UPS_PID are defined in DFRobot_LPUPS.h
 
 #define UPS_STATUS_LED              13      // Charging steady, blinking based on remaining capacity
 
@@ -35,5 +29,12 @@
 
 #define MIN_BATTERY_VOLTAGE         ((N_CELLS_PACK * MIN_CELL_VOLTAGE) + MIN_VOLTAGE_MARGIN)
 #define MAX_BATTERY_VOLTAGE         (N_CELLS_PACK * MAX_CELL_VOLTAGE)
+
+// ============================================================================
+// Function Prototypes
+// ============================================================================
+
+// Battery capacity calculation
+uint16_t socFromVoltage(uint16_t v_pack_mV, uint16_t dischargeCurrent_mA, uint16_t chargeCurrent_mA);
 
 #endif // UPS_H

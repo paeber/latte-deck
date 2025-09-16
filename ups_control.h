@@ -23,6 +23,7 @@ struct UPSStatus {
     bool is_charging;              // True if battery is charging
     bool is_connected;             // True if UPS is connected and responding
     uint32_t last_update_ms;       // Timestamp of last successful update
+    uint8_t raw_data[16];          // Raw register data for debug output
 };
 
 // ============================================================================
