@@ -15,7 +15,7 @@
 // ============================================================================
 
 // Joystick Inversion Settings
-#define JOYSTICK_R_INVERT_X         (-1)    // Invert right joystick X-axis
+#define JOYSTICK_R_INVERT_X         (1)     // Non-inverted right joystick X-axis
 #define JOYSTICK_R_INVERT_Y         (-1)    // Invert right joystick Y-axis
 #define JOYSTICK_L_INVERT_X         (-1)    // Invert left joystick X-axis
 #define JOYSTICK_L_INVERT_Y         (-1)    // Invert left joystick Y-axis
