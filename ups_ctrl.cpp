@@ -10,7 +10,7 @@
  * @url  https://github.com/DFRobot/DFRobot_LPUPS
  */
 #include <DFRobot_LPUPS.h>
-#include "upsDef.h"
+#include "ups_utils.h"
 #include "ups_ctrl.h"
 
 DFRobot_LPUPS_I2C LPUPS(&Wire, /*I2CAddr*/ UPS_I2C_ADDRESS);

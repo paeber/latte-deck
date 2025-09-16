@@ -41,7 +41,7 @@ return HID().SendReport(LATTE_REPORT_ID_POWER_DEVICE, &percentage, sizeof(percen
 
 ### 3. **Updated Configuration Files**
 - Added proper report ID definitions to `usb_config.h`
-- Updated `upsDef.h` to use the new report ID mappings
+- Updated `ups_utils.h` to use the new report ID mappings
 - Added comments explaining the Windows compatibility approach
 
 ## Technical Details

@@ -20,7 +20,7 @@ This document outlines the improvements made to streamline the LatteDeck codebas
 
 ### 2. **Missing Constants**
 **Problem**: `UPS_I2C_ADDRESS` and `THREE_BATTERIES_UPS_PID` were used but not defined.
-**Solution**: Added proper definitions in `upsDef.h`:
+**Solution**: Added proper definitions in `ups_utils.h`:
 ```cpp
 #define UPS_I2C_ADDRESS             0x55    // I2C address for UPS module
 #define THREE_BATTERIES_UPS_PID     0x42AA  // Product ID for 3-battery UPS
@@ -104,7 +104,7 @@ Keyboard: Report ID 3
 ### Modified Files
 - `gamepad.h` - Simplified by removing duplicate definitions
 - `gamepad.cpp` - Added config include, reduced buffer sizes
-- `upsDef.h` - Added missing constants, included config
+- `ups_utils.h` - Added missing constants, included config
 - `ups_ctrl.cpp` - Improved error handling
 - `ups_utils.cpp` - Reduced buffer sizes, added config include
 - `latte-deck.ino` - Standardized preprocessor directives

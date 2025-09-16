@@ -2,7 +2,7 @@
 #define UPS_CTRL_H
 
 #include <Arduino.h>
-#include "upsDef.h"
+#include "ups_utils.h"
 
 // Initializes UPS (I2C device, LEDs, HID power device)
 int setupUPS(void);

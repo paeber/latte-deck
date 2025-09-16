@@ -1,5 +1,5 @@
 #include <DFRobot_LPUPS.h>
-#include "upsDef.h"
+#include "ups_utils.h"
 #include "config.h"
 
 uint8_t regBuf[DATA_LEN_MAX] = { 0 };

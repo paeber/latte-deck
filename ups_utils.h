@@ -1,7 +1,7 @@
 #include <DFRobot_LPUPS.h>
 
-#ifndef __LPUPS_DEF_H__
-#define __LPUPS_DEF_H__
+#ifndef __UPS_UTILS_H__
+#define __UPS_UTILS_H__
 
 #include <Arduino.h>
 #include "config.h"
@@ -48,4 +48,4 @@ void printChargeDataCompact(void);
 void printChargeDataCompactWithLimiter(void);
 void flashReportedData(void);
 
-#endif /* __LPUPS_DEF_H__ */
+#endif /* __UPS_UTILS_H__ */
