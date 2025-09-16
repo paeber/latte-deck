@@ -11,6 +11,7 @@
  */
 #include <DFRobot_LPUPS.h>
 #include "ups_utils.h"
+#include "ups_hid.h"
 #include "ups_ctrl.h"
 
 DFRobot_LPUPS_I2C LPUPS(&Wire, /*I2CAddr*/ UPS_I2C_ADDRESS);
@@ -240,10 +241,8 @@ void loopUPS()
   if ((iPresentStatus != iPreviousStatus) || (iRemaining != iPrevRemaining) ||
     (iRunTimeToEmpty != iPrevRunTimeToEmpty) || (iIntTimer > MIN_UPDATE_INTERVAL)) {
 
-  // Use DFRobot library's HID reporting functions for proper Windows compatibility
-  LPUPS.sendPowerRemaining(iRemaining);
-  LPUPS.sendPowerRuntime(iRunTimeToEmpty);
-  LPUPS.sendPowerStatus(iPresentStatus);
+  // Use custom UPS HID reporting for proper Windows compatibility
+  UPSHID::sendBatteryReport(iRemaining, iRunTimeToEmpty, iPresentStatus);
   pinMode(UPS_BLUE_LED, OUTPUT);
 
     iIntTimer = 0;                          // Reset reporting interval timer

@@ -6,9 +6,10 @@ This document explains how the LatteDeck project properly integrates the DFRobot
 
 ## Problem Solved
 
-The original implementation had issues with Windows battery recognition because it was using a custom HID implementation instead of the proven DFRobot library's HID functionality. The solution is to use both libraries together:
+The original implementation had issues with Windows battery recognition because it was using a custom HID implementation instead of proper HID Power Device reporting. The solution is to use:
 
-- **DFRobot LPUPS Library**: Handles UPS communication and HID battery reporting
+- **DFRobot LPUPS Library**: Handles UPS I2C communication only
+- **Custom UPS HID Implementation**: Provides HID Power Device reporting using NicoHood HID library
 - **NicoHood HID Library**: Handles mouse and keyboard functionality
 
 ## Integration Approach
@@ -16,9 +17,9 @@ The original implementation had issues with Windows battery recognition because 
 ### 1. Library Configuration
 
 ```cpp
-// Enable DFRobot library's HID functionality for proper Windows battery reporting
+// Disable DFRobot library's HID functionality to avoid conflicts with NicoHood HID
 #ifndef UPS_HID_NICOHOOD
-#define UPS_HID_NICOHOOD 1
+#define UPS_HID_NICOHOOD 0
 #endif
 ```
 
@@ -30,20 +31,21 @@ void setup() {
     Mouse.begin();
     Keyboard.begin();
     
-    // Initialize UPS with DFRobot library (includes HID initialization)
+    // Initialize custom UPS HID for battery reporting
+    UPSHID::begin();
+    
+    // Initialize UPS with DFRobot library (I2C communication only)
     setupUPS();
 }
 ```
 
 ### 3. UPS HID Reporting
 
-The DFRobot library provides its own HID reporting functions:
+Custom UPS HID implementation provides proper battery reporting:
 
 ```cpp
-// Use DFRobot library's HID reporting functions for proper Windows compatibility
-LPUPS.sendPowerRemaining(iRemaining);
-LPUPS.sendPowerRuntime(iRunTimeToEmpty);
-LPUPS.sendPowerStatus(iPresentStatus);
+// Use custom UPS HID reporting for proper Windows compatibility
+UPSHID::sendBatteryReport(iRemaining, iRunTimeToEmpty, iPresentStatus);
 ```
 
 ### 4. Mouse and Keyboard Control
@@ -64,8 +66,8 @@ Keyboard.release(KEY_W);
 ## Key Benefits
 
 ### 1. **Proven Windows Compatibility**
-- DFRobot library has been tested and proven to work with Windows battery reporting
-- No need for custom HID descriptors or report structures
+- Custom UPS HID implementation follows USB HID Power Device specification
+- Proper HID descriptor and report structure for Windows recognition
 
 ### 2. **Simplified Code**
 - Removed custom CompositeHID wrapper
@@ -73,12 +75,12 @@ Keyboard.release(KEY_W);
 - Less code to maintain
 
 ### 3. **Better Reliability**
-- Both libraries are well-maintained and tested
-- No conflicts between HID implementations
+- DFRobot library handles UPS I2C communication
+- Custom UPS HID works with NicoHood HID without conflicts
 - Proper error handling
 
 ### 4. **Standards Compliance**
-- DFRobot library follows USB HID Power Device specifications
+- Custom UPS HID follows USB HID Power Device specifications
 - NicoHood library follows USB HID specifications for mouse/keyboard
 
 ## File Changes
@@ -86,14 +88,14 @@ Keyboard.release(KEY_W);
 ### Modified Files
 
 1. **`ups_utils.h`**:
-   - Enabled DFRobot HID functionality (`UPS_HID_NICOHOOD 1`)
-   - Removed CompositeHID dependencies
+   - Disabled DFRobot HID functionality (`UPS_HID_NICOHOOD 0`)
+   - Added custom UPS HID approach
 
 2. **`ups_utils.cpp`**:
-   - Updated `initPowerDevice()` to use DFRobot library
+   - Updated `initPowerDevice()` to use custom UPS HID
 
 3. **`ups_ctrl.cpp`**:
-   - Updated battery reporting to use DFRobot HID functions
+   - Updated battery reporting to use custom UPS HID functions
 
 4. **`gamepad.cpp`**:
    - Direct use of NicoHood Mouse and Keyboard functions
@@ -103,8 +105,12 @@ Keyboard.release(KEY_W);
    - Removed CompositeHID include
 
 6. **`latte-deck.ino`**:
-   - Direct initialization of NicoHood HID
+   - Direct initialization of NicoHood HID and UPS HID
    - Removed CompositeHID dependency
+
+### Added Files
+
+- **`ups_hid.h`** and **`ups_hid.cpp`**: Custom UPS HID implementation
 
 ### Removed Files
 

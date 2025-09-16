@@ -1,3 +1,5 @@
+// Include DFRobot LPUPS library for UPS communication only
+// We'll handle HID reporting separately to avoid conflicts with NicoHood HID
 #include <DFRobot_LPUPS.h>
 
 #ifndef __UPS_UTILS_H__
@@ -6,10 +8,13 @@
 #include <Arduino.h>
 #include "config.h"
 
-// Enable DFRobot library's HID functionality for proper Windows battery reporting
-// This will work alongside NicoHood HID for mouse/keyboard functionality
+// Forward declaration of LPUPS object
+extern DFRobot_LPUPS_I2C LPUPS;
+
+// Disable DFRobot library's HID functionality to avoid conflicts with NicoHood HID
+// We'll implement custom HID reporting that works with both libraries
 #ifndef UPS_HID_NICOHOOD
-#define UPS_HID_NICOHOOD 1
+#define UPS_HID_NICOHOOD 0
 #endif
 extern uint8_t regBuf[DATA_LEN_MAX];
 
@@ -34,11 +39,11 @@ extern uint16_t iPresentStatus;   // Now and previous device status.
 #define PRESENTSTATUS_SHUTDOWNIMNT   6
 #define PRESENTSTATUS_BATTPRESENT    7
 
-// Initialize HID reporting using DFRobot library
+// Initialize HID reporting using custom UPS HID implementation
 void initPowerDevice(void);
 
-// Use DFRobot library's HID functionality for UPS battery reporting
-// NicoHood HID will be used for mouse/keyboard functionality
+// Use custom UPS HID implementation for battery reporting
+// This works alongside NicoHood HID for mouse/keyboard functionality
 void printChargeData(void);
 void printChargeDataCompact(void);
 void printChargeDataCompactWithLimiter(void);

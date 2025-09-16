@@ -1,5 +1,6 @@
 #include <DFRobot_LPUPS.h>
 #include "ups_utils.h"
+#include "ups_hid.h"
 #include "config.h"
 
 uint8_t regBuf[DATA_LEN_MAX] = { 0 };
@@ -56,9 +57,9 @@ byte iFullChargeCapacity = 100;
 
 void initPowerDevice(void)
 {
-  // Initialize DFRobot LPUPS HID functionality for battery reporting
+  // Initialize custom UPS HID functionality for battery reporting
   // This will work alongside NicoHood HID for mouse/keyboard functionality
-  LPUPS.begin();
+  UPSHID::begin();
 }
 
 void printChargeData(void)

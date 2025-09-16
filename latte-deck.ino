@@ -14,6 +14,7 @@
 
 #include "usb_config.h"
 #include "ups_ctrl.h"
+#include "ups_hid.h"
 #include "gamepad.h"
 
 #include "config.h"
@@ -35,6 +36,10 @@ void setup() {
     Mouse.begin();
     Keyboard.begin();
     Serial.println("NicoHood HID initialized");
+    
+    // Initialize UPS HID for battery reporting
+    UPSHID::begin();
+    Serial.println("UPS HID initialized");
 
 
     upsStatus = setupUPS();
