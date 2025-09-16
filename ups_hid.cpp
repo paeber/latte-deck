@@ -9,9 +9,6 @@ static const uint8_t _upsHidDescriptor[] PROGMEM = {
   0x09, 0x01,             // Usage (Power Device)
   0xA1, 0x01,             // Collection (Application)
   
-  // Report ID for UPS Power Device
-  0x85, 0x01,             // Report ID (1)
-  
   // Battery Remaining Capacity
   0x09, 0x20,             // Usage (Battery Strength)
   0x15, 0x00,             // Logical Min 0
@@ -57,30 +54,29 @@ void UPSHID::begin()
 
 int UPSHID::sendRemainingCapacity(uint8_t percentage)
 {
-  return HID().SendReport(0x01, &percentage, sizeof(percentage));
+  return HID().SendReport(0, &percentage, sizeof(percentage));
 }
 
 int UPSHID::sendRuntimeToEmpty(uint16_t runtime)
 {
-  return HID().SendReport(0x01, &runtime, sizeof(runtime));
+  return HID().SendReport(0, &runtime, sizeof(runtime));
 }
 
 int UPSHID::sendPresentStatus(uint16_t status)
 {
-  return HID().SendReport(0x01, &status, sizeof(status));
+  return HID().SendReport(0, &status, sizeof(status));
 }
 
 int UPSHID::sendBatteryReport(uint8_t percentage, uint16_t runtime, uint16_t status)
 {
   // Create combined report structure matching HID descriptor
-  // Report structure: [ReportID][BatteryStrength(8)][RuntimeToEmpty(16)][PresentStatus(16)]
-  uint8_t report[6];
-  report[0] = 0x01;                    // Report ID
-  report[1] = percentage;              // Battery Strength (8-bit)
-  report[2] = runtime & 0xFF;         // Runtime to Empty (16-bit, low byte)
-  report[3] = (runtime >> 8) & 0xFF;  // Runtime to Empty (16-bit, high byte)
-  report[4] = status & 0xFF;          // Present Status (16-bit, low byte)
-  report[5] = (status >> 8) & 0xFF;   // Present Status (16-bit, high byte)
+  // Report structure: [BatteryStrength(8)][RuntimeToEmpty(16)][PresentStatus(16)]
+  uint8_t report[5];
+  report[0] = percentage;              // Battery Strength (8-bit)
+  report[1] = runtime & 0xFF;         // Runtime to Empty (16-bit, low byte)
+  report[2] = (runtime >> 8) & 0xFF;  // Runtime to Empty (16-bit, high byte)
+  report[3] = status & 0xFF;          // Present Status (16-bit, low byte)
+  report[4] = (status >> 8) & 0xFF;   // Present Status (16-bit, high byte)
   
-  return HID().SendReport(0x01, report, sizeof(report));
+  return HID().SendReport(0, report, sizeof(report));
 }

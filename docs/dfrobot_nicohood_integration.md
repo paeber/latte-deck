@@ -67,7 +67,8 @@ Keyboard.release(KEY_W);
 
 ### 1. **Proven Windows Compatibility**
 - Custom UPS HID implementation follows USB HID Power Device specification
-- Proper HID descriptor and report structure for Windows recognition
+- Proper HID descriptor without Report ID conflicts for Windows recognition
+- Eliminates "Report ID declaration found outside of top level collection" errors
 
 ### 2. **Simplified Code**
 - Removed custom CompositeHID wrapper
