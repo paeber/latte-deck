@@ -57,14 +57,19 @@ void setup() {
     Serial.println("LatteDeck ready!");
 }
 
+static int loopCount = 0;
 void loop() {
   #if ENABLE_HID_POWER_DEVICE
-  if (upsStatus == 0) {
-    loopUPS();
+  if (loopCount % 100 == 0) {
+    if (upsStatus == 0) {
+      loopUPS();
+    }
   }
   #endif
 
   #if ENABLE_MOUSE_KEYBOARD
   loopGamepad();
   #endif
+
+  loopCount++;
 }
