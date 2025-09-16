@@ -45,7 +45,7 @@ void printGamepad(const String& msg){
   #endif
 }
 
-void printGamepad(const char* format, ...){
+void printGamepadF(const char* format, ...){
   #if DEBUG_PRINT_GAMEPAD
   Serial.print("Gamepad: ");
   

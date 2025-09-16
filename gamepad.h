@@ -14,6 +14,6 @@ void setupGamepad();
 void loopGamepad();
 void printGamepad(const char* msg);
 void printGamepad(const String& msg);
-void printGamepad(const char* format, ...);
+void printGamepadF(const char* format, ...);
 
 #endif // GAMEPAD_H
