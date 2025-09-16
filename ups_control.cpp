@@ -176,8 +176,8 @@ void UPSControl::update() {
         }
     }
     
-    // Update status LED every 500ms
-    if (current_time - last_led_update_ms >= 500) {
+    // Update status LED every 50ms for smooth fading
+    if (current_time - last_led_update_ms >= 50) {
         updateStatusLED();
         last_led_update_ms = current_time;
     }
@@ -190,30 +190,46 @@ void UPSControl::update() {
 }
 
 void UPSControl::updateStatusLED() {
+    uint32_t current_time = millis();
+    
     if (!status.is_connected) {
-        // Fast blink when disconnected
+        // Fast blink when disconnected (500ms cycle)
+        if (current_time - led_cycle_start_ms >= 500) {
+            led_state = !led_state;
         digitalWrite(UPS_STATUS_LED, led_state);
-        led_state = !led_state;
+            led_cycle_start_ms = current_time;
+        }
         return;
     }
     
     if (status.is_charging) {
-        // Solid when charging
-        digitalWrite(UPS_STATUS_LED, HIGH);
-    } else {
-        // Blink rate based on capacity
-        if (status.capacity_percent > 50) {
-            // Slow blink when > 50%
-            digitalWrite(UPS_STATUS_LED, led_state);
-            led_state = !led_state;
-        } else if (status.capacity_percent > 20) {
-            // Medium blink when 20-50%
-            digitalWrite(UPS_STATUS_LED, led_state);
-            led_state = !led_state;
+        // Charging: Fading on and off in 2 second rhythm
+        uint32_t cycle_time = (current_time - led_cycle_start_ms) % 2000; // 2 second cycle
+        
+        if (cycle_time < 1000) {
+            // First second: fade in
+            led_brightness = map(cycle_time, 0, 999, 0, 255);
         } else {
-            // Fast blink when < 20%
-            digitalWrite(UPS_STATUS_LED, led_state);
-            led_state = !led_state;
+            // Second second: fade out
+            led_brightness = map(cycle_time, 1000, 1999, 255, 0);
+        }
+        
+        // Apply brightness using PWM (Arduino Leonardo supports PWM on pin 13)
+        analogWrite(UPS_STATUS_LED, led_brightness);
+        
+    } else {
+        // Discharging: Blink On/Off in 2 second window while on time represents remaining percentage
+        uint32_t cycle_time = (current_time - led_cycle_start_ms) % 2000; // 2 second cycle
+        
+        // Calculate on-time based on battery percentage (0-100% maps to 0-2000ms)
+        uint32_t on_time_ms = map(status.capacity_percent, 0, 100, 0, 2000);
+        
+        if (cycle_time < on_time_ms) {
+            // LED should be on
+            digitalWrite(UPS_STATUS_LED, HIGH);
+        } else {
+            // LED should be off
+            digitalWrite(UPS_STATUS_LED, LOW);
         }
     }
 }

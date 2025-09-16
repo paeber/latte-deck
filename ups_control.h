@@ -38,6 +38,11 @@ private:
     uint32_t last_led_update_ms;
     uint8_t led_state;
     
+    // LED status variables for improved indication
+    uint32_t led_cycle_start_ms;     // Start time of current LED cycle
+    uint8_t led_brightness;          // Current LED brightness (0-255)
+    bool led_fade_direction;         // true = fading in, false = fading out
+    
     // Internal methods
     bool readUPSData();
     void updateStatusLED();
