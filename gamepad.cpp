@@ -14,9 +14,6 @@
 JoystickData leftJoystick;
 JoystickData rightJoystick;
 
-// Mouse configuration
-const int sensitivityR = 500;  // Higher sensitivity value = slower mouse, should be <= about 500
-int invertMouseR = -1;         // Noninverted joystick based on orientation
 
 // Gamepad state
 bool gamepadDisabled = false;
@@ -85,7 +82,7 @@ void loopGamepad()
     processAxisMovement(leftJoystick, 200);
     
     // Handle mouse movement (right joystick)
-    processMouseMovement(rightJoystick, sensitivityR, invertMouseR);
+    processMouseMovement(rightJoystick, JOYSTICK_MOUSE_SENSITIVITY, JOYSTICK_R_INVERT);
     
     // Handle joystick button presses
     handleButtonPress(PIN_JOYSTICK_R_SEL, rightJoystick.selFlag, MOUSE_LEFT, "right joystick button");

@@ -14,6 +14,9 @@
 // Gamepad Configuration Constants
 // ============================================================================
 
+#define JOYSTICK_R_INVERT           (-1)    // Invert right joystick
+#define JOYSTICK_L_INVERT           (-1)    // Invert left joystick
+#define JOYSTICK_MOUSE_SENSITIVITY  500     // Mouse sensitivity
 #define JOYSTICK_SIDE_MAX           500     // Maximum joystick value for clipping
 #define SPRINT_THRESHOLD            480     // Threshold for sprint activation
 #define JOYSTICK_X_DEADZONE         20      // Deadzone for X-axis to prevent drift
