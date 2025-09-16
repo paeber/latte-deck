@@ -19,9 +19,7 @@ namespace CompositeHID {
   void begin();
   
   // Power Device functions
-  int sendPowerRemaining(uint8_t percentage);
-  int sendPowerRuntime(uint16_t seconds);
-  int sendPowerStatus(uint16_t status);
+  int sendPowerReport(uint8_t percentage, uint16_t runtime, uint16_t status);
   
   // Mouse and Keyboard functions
   int sendMouseReport(int8_t x, int8_t y, uint8_t buttons, int8_t wheel = 0);

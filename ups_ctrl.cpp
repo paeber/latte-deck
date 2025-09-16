@@ -240,10 +240,9 @@ void loopUPS()
   if ((iPresentStatus != iPreviousStatus) || (iRemaining != iPrevRemaining) ||
     (iRunTimeToEmpty != iPrevRunTimeToEmpty) || (iIntTimer > MIN_UPDATE_INTERVAL)) {
 
-  // Send CompositeHID Power reports
-  CompositeHID::sendPowerRemaining(iRemaining);
-  if (bDischarging) CompositeHID::sendPowerRuntime(iRunTimeToEmpty);
-  iRes = CompositeHID::sendPowerStatus(iPresentStatus);
+  // Send CompositeHID Power report (combined report with all battery data)
+  uint16_t runtime = bDischarging ? iRunTimeToEmpty : 0;
+  iRes = CompositeHID::sendPowerReport(iRemaining, runtime, iPresentStatus);
   pinMode(UPS_BLUE_LED, OUTPUT);
 
     iIntTimer = 0;                          // Reset reporting interval timer

@@ -155,12 +155,8 @@ void CompositeHID::begin()
   // Send initial reports to establish all interfaces
   // This helps Windows properly recognize each HID interface
   
-  // First, establish power device interface
-  sendPowerRemaining(100);
-  delay(50);
-  sendPowerRuntime(3600);
-  delay(50);
-  sendPowerStatus(0x0080); // Battery present bit
+  // First, establish power device interface with combined report
+  sendPowerReport(100, 3600, 0x0080); // 100%, 1 hour runtime, battery present
   delay(100);
   
   // Next, establish mouse interface
@@ -173,19 +169,19 @@ void CompositeHID::begin()
 }
 
 // Power Device functions - With report ID for Windows compatibility
-int CompositeHID::sendPowerRemaining(uint8_t percentage)
+int CompositeHID::sendPowerReport(uint8_t percentage, uint16_t runtime, uint16_t status)
 {
-  return HID().SendReport(LATTE_REPORT_ID_POWER_DEVICE, &percentage, sizeof(percentage));
-}
-
-int CompositeHID::sendPowerRuntime(uint16_t seconds)
-{
-  return HID().SendReport(LATTE_REPORT_ID_POWER_DEVICE, &seconds, sizeof(seconds));
-}
-
-int CompositeHID::sendPowerStatus(uint16_t status)
-{
-  return HID().SendReport(LATTE_REPORT_ID_POWER_DEVICE, &status, sizeof(status));
+  // Create combined report structure matching HID descriptor
+  // Report structure: [ReportID][BatteryStrength(8)][RuntimeToEmpty(16)][PresentStatus(16)]
+  uint8_t report[6];
+  report[0] = LATTE_REPORT_ID_POWER_DEVICE;  // Report ID
+  report[1] = percentage;                    // Battery Strength (8-bit)
+  report[2] = runtime & 0xFF;               // Runtime to Empty (16-bit, low byte)
+  report[3] = (runtime >> 8) & 0xFF;        // Runtime to Empty (16-bit, high byte)
+  report[4] = status & 0xFF;                // Present Status (16-bit, low byte)
+  report[5] = (status >> 8) & 0xFF;         // Present Status (16-bit, high byte)
+  
+  return HID().SendReport(LATTE_REPORT_ID_POWER_DEVICE, report, sizeof(report));
 }
 
 // Mouse functions - With report ID for Windows compatibility
