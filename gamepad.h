@@ -2,7 +2,6 @@
 #define GAMEPAD_H
 
 #include <Arduino.h>
-#include "composite_hid.h"
 #include "config.h"
 
 

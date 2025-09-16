@@ -1,6 +1,7 @@
 #include "gamepad.h"
 #include "config.h"
 #include <stdarg.h>
+#include <HID-Project.h>
 
 
 // Right
@@ -120,19 +121,19 @@ void loopGamepad()
     }
   
     if (vertValueR != 0)
-      CompositeHID::moveMouse(0, (invertMouseR * sgn(vertValueR) * 0.01 * (abs(pow(vertValueR, 2)) / sensitivityR))); // move mouse on y axis
+      Mouse.move(0, (invertMouseR * sgn(vertValueR) * 0.01 * (abs(pow(vertValueR, 2)) / sensitivityR))); // move mouse on y axis
     if (horzValueR != 0)
-      CompositeHID::moveMouse((invertMouseR * sgn(horzValueR) * 0.01 * (abs(pow(horzValueR, 2)) / sensitivityR)), 0); // move mouse on x axis
+      Mouse.move((invertMouseR * sgn(horzValueR) * 0.01 * (abs(pow(horzValueR, 2)) / sensitivityR)), 0); // move mouse on x axis
   
     if ((digitalRead(PIN_JOYSTICK_R_SEL) == 0) && (!mouseClickFlagR))  // if the joystick button is pressed
     {
       mouseClickFlagR = 1;
-      CompositeHID::pressMouse(MOUSE_LEFT);  // press the left button down
+      Mouse.press(MOUSE_LEFT);  // press the left button down
     }
     else if ((digitalRead(PIN_JOYSTICK_R_SEL)) && (mouseClickFlagR)) // if the joystick button is not pressed
     {
       mouseClickFlagR = 0;
-      CompositeHID::releaseMouse(MOUSE_LEFT);  // release the left button
+      Mouse.release(MOUSE_LEFT);  // release the left button
     }
 
    
@@ -140,61 +141,61 @@ void loopGamepad()
     if ((digitalRead(PIN_JOYSTICK_L_SEL) == 0) && (!selFlagL))  // if the joystick button is pressed
     {
       selFlagL = 1;
-      CompositeHID::pressKey(ACTION_JOYSTICK_L_PRESS);  // click the left button down
+      Keyboard.press(ACTION_JOYSTICK_L_PRESS);  // click the left button down
     }
     else if ((digitalRead(PIN_JOYSTICK_L_SEL)) && (selFlagL)) // if the joystick button is not pressed
     {
       selFlagL = 0;
-      CompositeHID::releaseKey(ACTION_JOYSTICK_L_PRESS);  // release the left button
+      Keyboard.release(ACTION_JOYSTICK_L_PRESS);  // release the left button
     }
 
     if ((vertValueL >= 200) && (!vertPosPressedL)){
       printGamepad("Pressing up");
-      CompositeHID::pressKey(ACTION_JOYSTICK_L_UP);
-      CompositeHID::releaseKey(ACTION_JOYSTICK_L_DOWN);
+      Keyboard.press(ACTION_JOYSTICK_L_UP);
+      Keyboard.release(ACTION_JOYSTICK_L_DOWN);
       vertPosPressedL = true;
       vertNegPressedL = false;
     } else if ((vertValueL <= -200) && (!vertNegPressedL)) {
       printGamepad("Pressing down");
-      CompositeHID::pressKey(ACTION_JOYSTICK_L_DOWN);
-      CompositeHID::releaseKey(ACTION_JOYSTICK_L_UP);
+      Keyboard.press(ACTION_JOYSTICK_L_DOWN);
+      Keyboard.release(ACTION_JOYSTICK_L_UP);
       vertNegPressedL = true;
       vertPosPressedL = false;
     } else if ((vertPosPressedL && vertValueL < 200) || (vertNegPressedL && vertValueL > (-200))) {
       printGamepad("Releasing up and down");
-      CompositeHID::releaseKey(ACTION_JOYSTICK_L_UP);
-      CompositeHID::releaseKey(ACTION_JOYSTICK_L_DOWN);
+      Keyboard.release(ACTION_JOYSTICK_L_UP);
+      Keyboard.release(ACTION_JOYSTICK_L_DOWN);
       vertNegPressedL = false;
       vertPosPressedL = false;
     }
 
     if ((horzValueL >= 200) && (!horzPosPressedL)){
       printGamepad("Pressing left");
-      CompositeHID::pressKey(ACTION_JOYSTICK_L_LEFT);
-      CompositeHID::releaseKey(ACTION_JOYSTICK_L_RIGHT);
+      Keyboard.press(ACTION_JOYSTICK_L_LEFT);
+      Keyboard.release(ACTION_JOYSTICK_L_RIGHT);
       horzPosPressedL = true;
       horzNegPressedL = false;
     } else if ((horzValueL <= -200) && (!horzNegPressedL)) {
       printGamepad("Pressing right");
-      CompositeHID::pressKey(ACTION_JOYSTICK_L_RIGHT);
-      CompositeHID::releaseKey(ACTION_JOYSTICK_L_LEFT);
+      Keyboard.press(ACTION_JOYSTICK_L_RIGHT);
+      Keyboard.release(ACTION_JOYSTICK_L_LEFT);
       horzNegPressedL = true;
       horzPosPressedL = false;
     } else if ((horzPosPressedL && horzValueL < 200) || (horzNegPressedL && horzValueL > (-200))) {
       printGamepad("Releasing left and right");
-      CompositeHID::releaseKey(ACTION_JOYSTICK_L_LEFT);
-      CompositeHID::releaseKey(ACTION_JOYSTICK_L_RIGHT);
+      Keyboard.release(ACTION_JOYSTICK_L_LEFT);
+      Keyboard.release(ACTION_JOYSTICK_L_RIGHT);
       horzNegPressedL = false;
       horzPosPressedL = false;
     }
 
     if ((abs(magValueL) >= SPRINT_THRESHOLD) && (!sprintActive)) {
       printGamepad("Pressing sprint");
-      CompositeHID::pressKey(ACTION_JOYSTICK_L_MAX);
+      Keyboard.press(ACTION_JOYSTICK_L_MAX);
       sprintActive = true;
     } else if ((abs(magValueL) < (SPRINT_THRESHOLD -20)) && (sprintActive)) {
       printGamepad("Releasing sprint");
-      CompositeHID::releaseKey(ACTION_JOYSTICK_L_MAX);
+      Keyboard.release(ACTION_JOYSTICK_L_MAX);
       sprintActive = false;
     }
 
@@ -215,22 +216,22 @@ void loopGamepad()
     
     } else {
     if (!gamepadDisabled){
-      CompositeHID::releaseMouse(MOUSE_LEFT);
-      CompositeHID::releaseMouse(MOUSE_RIGHT);
-      CompositeHID::moveMouse(0, 0);
+      Mouse.release(MOUSE_LEFT);
+      Mouse.release(MOUSE_RIGHT);
+      Mouse.move(0, 0);
       mouseClickFlagR = 0;
 
-      CompositeHID::releaseKey(ACTION_JOYSTICK_L_UP);
-      CompositeHID::releaseKey(ACTION_JOYSTICK_L_DOWN);
-      CompositeHID::releaseKey(ACTION_JOYSTICK_L_MAX);
-      CompositeHID::releaseKey(ACTION_JOYSTICK_L_PRESS);
-      CompositeHID::releaseKey(ACTION_BTN_L2);
-      CompositeHID::releaseKey(ACTION_BTN_L3);
-      CompositeHID::releaseKey(ACTION_BTN_L4);
+      Keyboard.release(ACTION_JOYSTICK_L_UP);
+      Keyboard.release(ACTION_JOYSTICK_L_DOWN);
+      Keyboard.release(ACTION_JOYSTICK_L_MAX);
+      Keyboard.release(ACTION_JOYSTICK_L_PRESS);
+      Keyboard.release(ACTION_BTN_L2);
+      Keyboard.release(ACTION_BTN_L3);
+      Keyboard.release(ACTION_BTN_L4);
 
-      CompositeHID::releaseKey(ACTION_BTN_R2);
-      CompositeHID::releaseKey(ACTION_BTN_R3);
-      CompositeHID::releaseKey(ACTION_BTN_R4);
+      Keyboard.release(ACTION_BTN_R2);
+      Keyboard.release(ACTION_BTN_R3);
+      Keyboard.release(ACTION_BTN_R4);
 
       vertNegPressedL = false;
       vertPosPressedL = false;

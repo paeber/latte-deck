@@ -33,7 +33,7 @@ int average = 50;             // Calculated moving average
 
 int setupUPS(void)
 {
-  delay(5000);
+  //delay(5000);
   Serial.println("UPS init"); //Avoid serial port not working
 
   // Init the sensor with improved error handling
@@ -51,7 +51,7 @@ int setupUPS(void)
       Serial.println("Max retries reached, giving up");
       return 1;
     }
-    delay(2000);
+    delay(1000);
   }
 
   // Initialize UPS indicator LEDs
@@ -72,7 +72,7 @@ int setupUPS(void)
    // maxChargeVoltage = 11800;
    // LPUPS.setMaxChargeVoltage(maxChargeVoltage);
 
-  // Initialize HID (stubbed when UPS_HID_NICOHOOD == 0)
+  // Initialize DFRobot LPUPS HID functionality for battery reporting
   initPowerDevice();
   Serial.println("UPS init done");
   return 0;
@@ -240,9 +240,10 @@ void loopUPS()
   if ((iPresentStatus != iPreviousStatus) || (iRemaining != iPrevRemaining) ||
     (iRunTimeToEmpty != iPrevRunTimeToEmpty) || (iIntTimer > MIN_UPDATE_INTERVAL)) {
 
-  // Send CompositeHID Power report (combined report with all battery data)
-  uint16_t runtime = bDischarging ? iRunTimeToEmpty : 0;
-  iRes = CompositeHID::sendPowerReport(iRemaining, runtime, iPresentStatus);
+  // Use DFRobot library's HID reporting functions for proper Windows compatibility
+  LPUPS.sendPowerRemaining(iRemaining);
+  LPUPS.sendPowerRuntime(iRunTimeToEmpty);
+  LPUPS.sendPowerStatus(iPresentStatus);
   pinMode(UPS_BLUE_LED, OUTPUT);
 
     iIntTimer = 0;                          // Reset reporting interval timer

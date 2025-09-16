@@ -10,8 +10,12 @@
 // ============================================================================
 
 // UPS Hardware Configuration
+#ifndef UPS_I2C_ADDRESS
 #define UPS_I2C_ADDRESS             0x55    // I2C address for UPS module
+#endif
+#ifndef THREE_BATTERIES_UPS_PID
 #define THREE_BATTERIES_UPS_PID     0X42AA  // Product ID for 3-battery UPS
+#endif
 
 // LED Pin Definitions
 #define UPS_GREEN_LED               9       // Battery level indicator LED, green

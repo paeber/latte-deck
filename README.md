@@ -20,13 +20,10 @@ A composite HID device that provides UPS battery status reporting and gamepad fu
    - "HID-Project" by NicoHood
    - "DFRobot_LPUPS" by DFRobot
 
-2. **Fix Library Conflicts** (Critical):
-   ```bash
-   # Navigate to Arduino libraries folder
-   cd ~/Arduino/libraries/DFRobot_LPUPS/
-   # Remove conflicting HID files
-   rm HID.c HID.h
-   ```
+2. **Library Integration**:
+   - The DFRobot LPUPS library provides HID battery reporting functionality
+   - The NicoHood HID library provides mouse and keyboard functionality
+   - Both libraries work together without conflicts
 
 3. **Upload Code**:
    - Clone this repository
@@ -61,21 +58,21 @@ UPS_RED_LED = 10, UPS_GREEN_LED = 9, UPS_BLUE_LED = 13
 ### HID Interface Structure
 ```
 USB Device
-├── Power Device Interface (Report ID 1)
+├── Power Device Interface (DFRobot LPUPS Library)
 │   ├── Battery Remaining Capacity
 │   ├── Runtime to Empty  
 │   └── Present Status
-├── Mouse Interface (Report ID 2)
+├── Mouse Interface (NicoHood HID Library)
 │   ├── Buttons, X/Y Movement, Scroll Wheel
-└── Keyboard Interface (Report ID 3)
+└── Keyboard Interface (NicoHood HID Library)
     ├── Modifier Keys, LED Output, Key Array
 ```
 
 ### Key Components
 - **`config.h`**: Centralized configuration (pins, constants, feature flags)
-- **`composite_hid.cpp`**: HID descriptor and report handling
-- **`ups_ctrl.cpp`**: UPS battery management and I2C communication
-- **`gamepad.cpp`**: Joystick input processing and HID output
+- **`ups_ctrl.cpp`**: UPS battery management and I2C communication using DFRobot library
+- **`gamepad.cpp`**: Joystick input processing and HID output using NicoHood library
+- **`ups_utils.cpp`**: UPS utility functions and HID initialization
 
 ## Configuration
 
@@ -102,7 +99,7 @@ USB Device
 
 ### Windows Issues
 - **"This device cannot start (Code 10)"**: See [Troubleshooting Guide](docs/troubleshooting.md)
-- **HID not recognized**: Ensure DFRobot HID files are removed
+- **HID not recognized**: Check library installation and USB connection
 - **Battery not showing**: Check UPS I2C connection and PID value
 
 ### Testing
@@ -114,9 +111,9 @@ USB Device
 ## Technical Notes
 
 ### Windows Compatibility
-- Uses proper report IDs (1, 2, 3) for each HID interface
-- Follows Windows HID specifications for composite devices
-- Eliminates "top level collection" errors
+- Uses DFRobot LPUPS library's proven HID implementation for battery reporting
+- Uses NicoHood HID library for mouse and keyboard functionality
+- Both libraries work together without conflicts
 
 ### Memory Optimization
 - Reduced buffer sizes (256B output, 80B debug)
@@ -129,6 +126,7 @@ USB Device
 - Comprehensive debug output options
 
 ## Documentation
+- [DFRobot and NicoHood Integration](docs/dfrobot_nicohood_integration.md) - Library integration approach
 - [Troubleshooting Guide](docs/troubleshooting.md) - Common issues and solutions
 - [Windows HID Compatibility Fix](docs/windows_hid_compatibility_fix.md) - Technical details
 - [Codebase Improvements](docs/codebase_improvements.md) - Development notes

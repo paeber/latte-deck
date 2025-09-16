@@ -5,13 +5,14 @@
  * It provides a composite HID device with UPS battery reporting, mouse, and keyboard functionality.
  */
 
-// CRITICAL: Include NicoHood HID library FIRST to ensure it takes priority
-// over any HID functionality in the DFRobot LPUPS library
+// Include DFRobot LPUPS library for battery reporting
+#include <DFRobot_LPUPS.h>
+
+// Include NicoHood HID library for mouse and keyboard functionality
 #include <HID-Project.h>
 #include <HID-Settings.h>
 
 #include "usb_config.h"
-#include "composite_hid.h"
 #include "ups_ctrl.h"
 #include "gamepad.h"
 
@@ -30,9 +31,10 @@ void setup() {
     // and the USB_VID and USB_PID definitions in usb_config.h
     // The Leonardo doesn't support runtime USB descriptor changes
     
-    // Initialize the composite HID device first
-    CompositeHID::begin();
-    Serial.println("Composite HID initialized");
+    // Initialize NicoHood HID for mouse and keyboard functionality
+    Mouse.begin();
+    Keyboard.begin();
+    Serial.println("NicoHood HID initialized");
 
 
     upsStatus = setupUPS();

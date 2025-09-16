@@ -56,8 +56,9 @@ byte iFullChargeCapacity = 100;
 
 void initPowerDevice(void)
 {
-  // HID functionality is handled by CompositeHID::begin() in main setup()
-  // This function is kept for compatibility but does nothing
+  // Initialize DFRobot LPUPS HID functionality for battery reporting
+  // This will work alongside NicoHood HID for mouse/keyboard functionality
+  LPUPS.begin();
 }
 
 void printChargeData(void)
