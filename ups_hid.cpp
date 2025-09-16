@@ -1,5 +1,7 @@
 #include "ups_hid.h"
 #include "config.h"
+#include "hid_descriptor.h"
+#include "hid_leonardo.h"
 
 // ============================================================================
 // Global HID Power Device Instance
@@ -11,20 +13,22 @@ UPSHID ups_hid;
 // UPSHID Class Implementation
 // ============================================================================
 
-UPSHID::UPSHID() : report_sent(false), last_report_time(0) {
+UPSHID::UPSHID() {
     // Initialize last report
     memset(&last_report, 0, sizeof(last_report));
     last_report.report_id = UPS_HID_REPORT_ID;
 }
 
 bool UPSHID::begin() {
-    printUPS("Initializing HID Power Device...");
+    printUPS("Initializing UPS HID interface...");
     
-    // Initialize HID Power Device
-    // Note: The actual HID descriptor setup is handled by the HID-Project library
-    // and the hid_config.h configuration
+    // Initialize the Leonardo HID interface
+    if (!setupLeonardoHID()) {
+        printUPS("Failed to initialize Leonardo HID");
+        return false;
+    }
     
-    printUPS("HID Power Device initialized");
+    printUPS("UPS HID interface initialized");
     return true;
 }
 
@@ -32,28 +36,19 @@ void UPSHID::reportBatteryStatus(const UPSStatus& status) {
     // Create new report
     createReport(status);
     
-    // Send report if it's different from the last one or enough time has passed
-    uint32_t current_time = millis();
-    bool should_send = false;
+    // Convert to Leonardo HID report format
+    LeonardoHIDPowerDeviceReport leonardo_report;
+    leonardo_report.report_id = last_report.report_id;
+    leonardo_report.battery_present = last_report.battery_present;
+    leonardo_report.battery_capacity = last_report.battery_capacity;
+    leonardo_report.battery_voltage = last_report.battery_voltage;
+    leonardo_report.battery_current = last_report.battery_current;
+    leonardo_report.battery_temperature = last_report.battery_temperature;
+    leonardo_report.battery_status = last_report.battery_status;
+    leonardo_report.runtime_to_empty = last_report.runtime_to_empty;
     
-    if (!report_sent) {
-        should_send = true;
-    } else if (current_time - last_report_time >= 5000) { // Send every 5 seconds
-        should_send = true;
-    } else if (memcmp(&last_report, &last_report, sizeof(HIDPowerDeviceReport)) != 0) {
-        should_send = true;
-    }
-    
-    if (should_send) {
-        if (sendReport()) {
-            last_report_time = current_time;
-            report_sent = true;
-            
-            #if DEBUG_PRINT_UPS
-            printReport(last_report);
-            #endif
-        }
-    }
+    // Send the report using the Leonardo HID interface
+    sendBatteryStatusLeonardo(leonardo_report);
 }
 
 void UPSHID::createReport(const UPSStatus& status) {
@@ -130,25 +125,6 @@ void UPSHID::createReport(const UPSStatus& status) {
     }
 }
 
-bool UPSHID::sendReport() {
-    // Send HID Power Device report
-    // Note: This is a simplified implementation. In a real implementation,
-    // you would need to properly configure the HID descriptor and use
-    // the appropriate HID library functions.
-    
-    // For now, we'll use a basic approach with the HID-Project library
-    // The actual implementation may need to be adjusted based on the
-    // specific HID library being used and the target operating system.
-    
-    #if DEBUG_PRINT_UPS
-    printUPS("Sending HID Power Device report...");
-    #endif
-    
-    // This is a placeholder - the actual HID report sending would depend
-    // on the specific HID library implementation and descriptor setup
-    // For now, we'll just indicate that the report was "sent"
-    return true;
-}
 
 void UPSHID::printReport(const HIDPowerDeviceReport& report) {
     printUPSF("HID Report - Present: %d, Capacity: %d%%, Voltage: %d mV, Current: %d mA, Temp: %d°C, Status: %d, Runtime: %d min",

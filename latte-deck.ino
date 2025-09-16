@@ -12,6 +12,7 @@
 #include "usb_config.h"
 #include "gamepad.h"
 #include "ups_control.h"
+#include "ups_hid.h"
 #include "config.h"
 
 int gamepadStatus = -1;
@@ -38,6 +39,13 @@ void setup() {
     #if ENABLE_HID_POWER_DEVICE
     if (setupUPS()) {
         Serial.println("UPS setup completed");
+        
+        // Initialize UPS HID reporting
+        if (setupUPSHID()) {
+            Serial.println("UPS HID reporting initialized");
+        } else {
+            Serial.println("UPS HID reporting failed - continuing without HID reporting");
+        }
     } else {
         Serial.println("UPS setup failed - continuing without UPS");
     }
@@ -52,5 +60,8 @@ void loop() {
   // Update UPS functionality (non-blocking)
   #if ENABLE_HID_POWER_DEVICE
   loopUPS();
+  
+  // Report UPS battery status via HID
+  reportUPSBatteryStatus();
   #endif
 }

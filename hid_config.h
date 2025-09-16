@@ -8,9 +8,9 @@
 #include <HID-Settings.h>
 
 // Override HID-Project settings to enable Report IDs for composite devices
-// This is necessary when combining multiple HID interfaces (Mouse + Keyboard)
+// This is necessary when combining multiple HID interfaces (Power Device + Mouse + Keyboard)
 
-// Enable Report IDs for Power Device interface
+// Enable Report IDs for Power Device interface (UPS Battery Status)
 #ifndef HID_POWER_DEVICE_REPORT_ID
 #define HID_POWER_DEVICE_REPORT_ID 1
 #endif
@@ -48,6 +48,16 @@
 // Enable composite device support
 #ifndef HID_COMPOSITE_DEVICE
 #define HID_COMPOSITE_DEVICE 1
+#endif
+
+// Enable Power Device support
+#ifndef HID_POWER_DEVICE_ENABLED
+#define HID_POWER_DEVICE_ENABLED 1
+#endif
+
+// Custom HID descriptor support
+#ifndef HID_CUSTOM_DESCRIPTOR
+#define HID_CUSTOM_DESCRIPTOR 1
 #endif
 
 #endif // HID_CONFIG_H
