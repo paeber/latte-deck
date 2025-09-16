@@ -137,10 +137,10 @@ initializeJoystick(leftJoystick, PIN_JOYSTICK_L_X, PIN_JOYSTICK_L_Y, PIN_JOYSTIC
 initializeJoystick(rightJoystick, PIN_JOYSTICK_R_X, PIN_JOYSTICK_R_Y, PIN_JOYSTICK_R_SEL);
 
 // In main loop
-readJoystick(leftJoystick);
-readJoystick(rightJoystick);
+readJoystick(leftJoystick, JOYSTICK_L_INVERT_X, JOYSTICK_L_INVERT_Y);
+readJoystick(rightJoystick, JOYSTICK_R_INVERT_X, JOYSTICK_R_INVERT_Y);
 processAxisMovement(leftJoystick, 200);
-processMouseMovement(rightJoystick, sensitivityR, invertMouseR);
+processMouseMovement(rightJoystick, JOYSTICK_MOUSE_SENSITIVITY);
 handleDirectionalKeys(leftJoystick, ACTION_JOYSTICK_L_UP, ACTION_JOYSTICK_L_DOWN, 
                      ACTION_JOYSTICK_L_LEFT, ACTION_JOYSTICK_L_RIGHT, 200);
 ```

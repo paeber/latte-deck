@@ -14,11 +14,14 @@
 // Gamepad Configuration Constants
 // ============================================================================
 
+// Joystick Inversion Settings
 #define JOYSTICK_R_INVERT_X         (-1)    // Invert right joystick X-axis
 #define JOYSTICK_R_INVERT_Y         (-1)    // Invert right joystick Y-axis
 #define JOYSTICK_L_INVERT_X         (-1)    // Invert left joystick X-axis
 #define JOYSTICK_L_INVERT_Y         (-1)    // Invert left joystick Y-axis
-#define JOYSTICK_MOUSE_SENSITIVITY  500     // Mouse sensitivity
+
+// Sensitivity and Threshold Settings
+#define JOYSTICK_MOUSE_SENSITIVITY  500     // Mouse sensitivity (higher = slower)
 #define JOYSTICK_SIDE_MAX           500     // Maximum joystick value for clipping
 #define SPRINT_THRESHOLD            480     // Threshold for sprint activation
 #define JOYSTICK_X_DEADZONE         20      // Deadzone for X-axis to prevent drift
@@ -74,6 +77,26 @@
 |                  | Digital  | 4          | R2 (top)                       |
 |                  | Digital  | 5          | R3 (middle)                    |
 |                  | Digital  | 6          | R4 (bottom)                    |
+*/
+
+// ============================================================================
+// Configuration Notes
+// ============================================================================
+/*
+Inversion Settings:
+- Set to (-1) to invert axis direction
+- Set to (1) for normal axis direction
+- Each joystick can have independent X/Y inversion
+
+Mouse Sensitivity:
+- Higher values = slower mouse movement
+- Lower values = faster mouse movement
+- Recommended range: 200-1000
+
+Thresholds:
+- SPRINT_THRESHOLD: Joystick magnitude needed for sprint activation
+- JOYSTICK_SIDE_MAX: Maximum joystick value before clipping
+- Deadzones: Prevent drift when joystick is centered
 */
 
 #endif // GAMEPAD_PINOUT_H

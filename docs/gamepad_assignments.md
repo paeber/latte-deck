@@ -26,12 +26,12 @@ The gamepad assignments are defined in `gamepad_assignment.h` and can be easily 
 | Component        | Action                    | Key/Function        | Description                    |
 |------------------|---------------------------|---------------------|--------------------------------|
 | **Left Joystick** |                           |                     |                                |
-|                  | Up                        | W                   | Move forward                   |
-|                  | Down                      | S                   | Move backward                  |
-|                  | Left                      | A                   | Move left                      |
-|                  | Right                     | D                   | Move right                     |
+|                  | Up                        | w                   | Move forward                   |
+|                  | Down                      | s                   | Move backward                  |
+|                  | Left                      | a                   | Move left                      |
+|                  | Right                     | d                   | Move right                     |
 |                  | Press                     | Space               | Jump                           |
-|                  | Max (Sprint)              | E                   | Sprint when pushed to edge     |
+|                  | Max (Sprint)              | e                   | Sprint when pushed to edge     |
 | **Left Buttons** |                           |                     |                                |
 |                  | L1 (Shoulder)             | Right Mouse Click   | Secondary action               |
 |                  | L2 (Top)                  | Q                   | Quick action                   |
@@ -66,10 +66,10 @@ To modify button assignments:
 #define ACTION_BTN_L4                  ACTION_NONE
 
 // Change L2 to F key
-#define ACTION_BTN_L2                  KEY_F
+#define ACTION_BTN_L2                  'f'
 
 // Change R3 to Tab key
-#define ACTION_BTN_R3                  KEY_TAB
+#define ACTION_BTN_R3                  '\t'
 
 // Disable sprint functionality
 #define ACTION_JOYSTICK_L_MAX          ACTION_NONE
@@ -84,7 +84,7 @@ To modify button assignments:
 
 The system supports standard keyboard keys and mouse actions:
 
-- **Keyboard Keys**: `KEY_A`, `KEY_B`, `KEY_SPACE`, `KEY_ENTER`, etc.
+- **Keyboard Keys**: Character literals like `'a'`, `'b'`, `' '` (space), `'\t'` (tab), etc.
 - **Mouse Actions**: `MOUSE_LEFT`, `MOUSE_RIGHT`, `MOUSE_MIDDLE`
 - **Mouse Movement**: `MOUSE_MOVE_UP`, `MOUSE_MOVE_DOWN`, `MOUSE_MOVE_LEFT`, `MOUSE_MOVE_RIGHT`
 - **Special**: `ACTION_NONE` (no action)
