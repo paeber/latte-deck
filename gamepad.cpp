@@ -1,5 +1,6 @@
 #include "gamepad.h"
 #include "config.h"
+#include <stdarg.h>
 
 
 // Right
@@ -16,6 +17,7 @@ int invertJoystickLY = -1;
 // Left
 int vertZeroL, horzZeroL;  // Stores the initial value of each axis, usually around 512
 int vertValueL, horzValueL;  // Stores current analog output of each axis
+float magValueL, magValueR;  // Magnitude of joystick movement
 bool vertPosPressedL = false;
 bool vertNegPressedL = false;
 bool horzPosPressedL = false;
@@ -29,11 +31,32 @@ template <typename T> int sgn(T val) {
   return (T(0) < val) - (val < T(0));
 }
 
-void printGamepad(char* msg){
-  #ifdef DEBUG_PRINT_GAMEPAD
+void printGamepad(const char* msg){
+  #if DEBUG_PRINT_GAMEPAD
   Serial.print("Gamepad: ");
-  Serial.print(msg);
-  Serial.println();
+  Serial.println(msg);
+  #endif
+}
+
+void printGamepad(const String& msg){
+  #if DEBUG_PRINT_GAMEPAD
+  Serial.print("Gamepad: ");
+  Serial.println(msg);
+  #endif
+}
+
+void printGamepad(const char* format, ...){
+  #if DEBUG_PRINT_GAMEPAD
+  Serial.print("Gamepad: ");
+  
+  // Create a buffer for the formatted string
+  char buffer[128];
+  va_list args;
+  va_start(args, format);
+  vsnprintf(buffer, sizeof(buffer), format, args);
+  va_end(args);
+  
+  Serial.println(buffer);
   #endif
 }
 
