@@ -6,9 +6,9 @@ This document explains how the LatteDeck project properly integrates the DFRobot
 
 ## Problem Solved
 
-The original implementation had issues with Windows battery recognition because it was using a custom HID implementation instead of proper HID Power Device reporting. The solution is to use:
+The original implementation had issues with Windows battery recognition because the DFRobot LPUPS library's HID implementation conflicted with the NicoHood HID library. The solution is to use:
 
-- **DFRobot LPUPS Library**: Handles UPS I2C communication only
+- **Modified DFRobot LPUPS Library**: NicoHood-compatible version that handles UPS I2C communication only
 - **Custom UPS HID Implementation**: Provides HID Power Device reporting using NicoHood HID library
 - **NicoHood HID Library**: Handles mouse and keyboard functionality
 
@@ -17,14 +17,17 @@ The original implementation had issues with Windows battery recognition because 
 ### 1. Library Configuration
 
 ```cpp
-// Disable DFRobot library's HID functionality to avoid conflicts with NicoHood HID
-#ifndef UPS_HID_NICOHOOD
-#define UPS_HID_NICOHOOD 0
-#endif
+// Use NicoHood-compatible DFRobot library (no HID conflicts)
+#include "DFRobot_LPUPS_NicoHood.h"
 
 // Configure Report IDs for composite HID device
 #include "hid_config.h"  // Must be included before HID-Project.h
 ```
+
+The modified DFRobot library (`DFRobot_LPUPS_NicoHood.h/cpp`) provides:
+- **I2C Communication**: Full UPS hardware communication
+- **No HID Implementation**: Removes conflicting HID code
+- **NicoHood Compatible**: Works seamlessly with NicoHood HID
 
 The `hid_config.h` file configures Report IDs for all HID interfaces:
 - UPS Power Device: Report ID 1
@@ -121,6 +124,8 @@ Keyboard.release(KEY_W);
 ### Added Files
 
 - **`ups_hid.h`** and **`ups_hid.cpp`**: Custom UPS HID implementation
+- **`DFRobot_LPUPS_NicoHood.h`** and **`DFRobot_LPUPS_NicoHood.cpp`**: NicoHood-compatible DFRobot library
+- **`hid_config.h`**: HID configuration with Report IDs
 
 ### Removed Files
 

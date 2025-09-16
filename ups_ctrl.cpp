@@ -9,12 +9,12 @@
  * @date  2023-08-09
  * @url  https://github.com/DFRobot/DFRobot_LPUPS
  */
-#include <DFRobot_LPUPS.h>
+#include "DFRobot_LPUPS_NicoHood.h"
 #include "ups_utils.h"
 #include "ups_hid.h"
 #include "ups_ctrl.h"
 
-DFRobot_LPUPS_I2C LPUPS(&Wire, /*I2CAddr*/ UPS_I2C_ADDRESS);
+DFRobot_LPUPS_I2C_NicoHood LPUPS(&Wire, /*I2CAddr*/ UPS_I2C_ADDRESS);
 
 uint16_t iPreviousStatus = 0;   // Now and previous device status.
 byte iRemaining = 0, iPrevRemaining = 100;

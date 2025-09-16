@@ -8,8 +8,8 @@
 // Include HID configuration first to set up Report IDs
 #include "hid_config.h"
 
-// Include DFRobot LPUPS library for battery reporting
-#include <DFRobot_LPUPS.h>
+// Include NicoHood-compatible DFRobot LPUPS library for battery reporting
+#include "DFRobot_LPUPS_NicoHood.h"
 
 // Include NicoHood HID library for mouse and keyboard functionality
 #include <HID-Project.h>

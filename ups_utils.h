@@ -1,6 +1,6 @@
-// Include DFRobot LPUPS library for UPS communication only
+// Include NicoHood-compatible DFRobot LPUPS library for UPS communication only
 // We'll handle HID reporting separately to avoid conflicts with NicoHood HID
-#include <DFRobot_LPUPS.h>
+#include "DFRobot_LPUPS_NicoHood.h"
 
 #ifndef __UPS_UTILS_H__
 #define __UPS_UTILS_H__
@@ -9,7 +9,7 @@
 #include "config.h"
 
 // Forward declaration of LPUPS object
-extern DFRobot_LPUPS_I2C LPUPS;
+extern DFRobot_LPUPS_I2C_NicoHood LPUPS;
 
 // Disable DFRobot library's HID functionality to avoid conflicts with NicoHood HID
 // We'll implement custom HID reporting that works with both libraries
@@ -18,7 +18,7 @@ extern DFRobot_LPUPS_I2C LPUPS;
 #endif
 extern uint8_t regBuf[DATA_LEN_MAX];
 
-extern DFRobot_LPUPS_I2C::sChargerStatus1_t chargerStatus1;
+extern DFRobot_LPUPS_NicoHood::sChargerStatus1_t chargerStatus1;
 
 extern uint16_t dischargeCurrent, chargeCurrent;
 extern uint16_t batteryVoltage, maxChargeVoltage;

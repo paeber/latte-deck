@@ -1,13 +1,13 @@
-#include <DFRobot_LPUPS.h>
+#include "DFRobot_LPUPS_NicoHood.h"
 #include "ups_utils.h"
 #include "ups_hid.h"
 #include "config.h"
 
 uint8_t regBuf[DATA_LEN_MAX] = { 0 };
-DFRobot_LPUPS_I2C::sChargerStatus0_t chargerStatus0;
-DFRobot_LPUPS_I2C::sChargerStatus1_t chargerStatus1;
-DFRobot_LPUPS_I2C::sProchotStatus0_t prochotStatus0;
-DFRobot_LPUPS_I2C::sProchotStatus1_t prochotStatus1;
+DFRobot_LPUPS_NicoHood::sChargerStatus0_t chargerStatus0;
+DFRobot_LPUPS_NicoHood::sChargerStatus1_t chargerStatus1;
+DFRobot_LPUPS_NicoHood::sProchotStatus0_t prochotStatus0;
+DFRobot_LPUPS_NicoHood::sProchotStatus1_t prochotStatus1;
 uint16_t systemPower = 0, inputVoltage = 0;
 uint16_t dischargeCurrent = 0, chargeCurrent = 0;
 uint16_t CMPINVoltage = 0, inputCurrent = 0;
