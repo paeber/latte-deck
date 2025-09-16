@@ -2,6 +2,8 @@
 #define CONFIG_H
 
 #include <Arduino.h>
+#include <HID-Project.h>
+#include <HID-Settings.h>
 
 // ============================================================================
 // Hardware Configuration
@@ -106,18 +108,18 @@
 #define BUTTON_UNDEFINED            0
 
 // Left Joystick Actions
-#define ACTION_JOYSTICK_L_UP        'w'
-#define ACTION_JOYSTICK_L_DOWN      's'
-#define ACTION_JOYSTICK_L_LEFT      'a'
-#define ACTION_JOYSTICK_L_RIGHT     'd'
-#define ACTION_JOYSTICK_L_PRESS     ' '     // Space key
-#define ACTION_JOYSTICK_L_MAX       'e'     // Sprint when moving joystick beyond threshold
+#define ACTION_JOYSTICK_L_UP        KEY_W
+#define ACTION_JOYSTICK_L_DOWN      KEY_S
+#define ACTION_JOYSTICK_L_LEFT      KEY_A
+#define ACTION_JOYSTICK_L_RIGHT     KEY_D
+#define ACTION_JOYSTICK_L_PRESS     KEY_SPACE   // Space key
+#define ACTION_JOYSTICK_L_MAX       KEY_E       // Sprint when moving joystick beyond threshold
 
 // Left Button Actions
 #define ACTION_BTN_L1               MOUSE_RIGHT
-#define ACTION_BTN_L2               'q'     // Top button
-#define ACTION_BTN_L3               '1'     // Middle button
-#define ACTION_BTN_L4               '2'     // Bottom button
+#define ACTION_BTN_L2               KEY_Q       // Top button
+#define ACTION_BTN_L3               KEY_1       // Middle button
+#define ACTION_BTN_L4               KEY_2       // Bottom button
 
 // Right Joystick Actions (Mouse)
 #define ACTION_JOYSTICK_R_UP        MOUSE_MOVE_UP
@@ -129,8 +131,8 @@
 
 // Right Button Actions
 #define ACTION_BTN_R1               MOUSE_LEFT
-#define ACTION_BTN_R2               ' '     // Top button
-#define ACTION_BTN_R3               'r'     // Middle button
-#define ACTION_BTN_R4               'e'     // Bottom button
+#define ACTION_BTN_R2               KEY_SPACE   // Top button
+#define ACTION_BTN_R3               KEY_R       // Middle button
+#define ACTION_BTN_R4               KEY_E       // Bottom button
 
 #endif // CONFIG_H
