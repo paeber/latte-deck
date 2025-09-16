@@ -10,8 +10,8 @@ static const uint8_t _upsHidDescriptor[] PROGMEM = {
   0x09, 0x01,             // Usage (Power Device)
   0xA1, 0x01,             // Collection (Application)
   
-  // Report ID for UPS Power Device
-  0x85, 0x01,             // Report ID (1)
+  // Report ID for UPS Power Device (must be inside this top-level collection)
+  0x85, LATTE_REPORT_ID_POWER_DEVICE, // Report ID (1)
   
   // Battery Remaining Capacity
   0x09, 0x20,             // Usage (Battery Strength)
@@ -58,17 +58,17 @@ void UPSHID::begin()
 
 int UPSHID::sendRemainingCapacity(uint8_t percentage)
 {
-  return HID().SendReport(0x01, &percentage, sizeof(percentage));
+  return HID().SendReport(LATTE_REPORT_ID_POWER_DEVICE, &percentage, sizeof(percentage));
 }
 
 int UPSHID::sendRuntimeToEmpty(uint16_t runtime)
 {
-  return HID().SendReport(0x01, &runtime, sizeof(runtime));
+  return HID().SendReport(LATTE_REPORT_ID_POWER_DEVICE, &runtime, sizeof(runtime));
 }
 
 int UPSHID::sendPresentStatus(uint16_t status)
 {
-  return HID().SendReport(0x01, &status, sizeof(status));
+  return HID().SendReport(LATTE_REPORT_ID_POWER_DEVICE, &status, sizeof(status));
 }
 
 int UPSHID::sendBatteryReport(uint8_t percentage, uint16_t runtime, uint16_t status)
@@ -76,12 +76,12 @@ int UPSHID::sendBatteryReport(uint8_t percentage, uint16_t runtime, uint16_t sta
   // Create combined report structure matching HID descriptor
   // Report structure: [ReportID][BatteryStrength(8)][RuntimeToEmpty(16)][PresentStatus(16)]
   uint8_t report[6];
-  report[0] = 0x01;                    // Report ID (1)
+  report[0] = LATTE_REPORT_ID_POWER_DEVICE; // Report ID (1)
   report[1] = percentage;              // Battery Strength (8-bit)
   report[2] = runtime & 0xFF;         // Runtime to Empty (16-bit, low byte)
   report[3] = (runtime >> 8) & 0xFF;  // Runtime to Empty (16-bit, high byte)
   report[4] = status & 0xFF;          // Present Status (16-bit, low byte)
   report[5] = (status >> 8) & 0xFF;   // Present Status (16-bit, high byte)
   
-  return HID().SendReport(0x01, report, sizeof(report));
+  return HID().SendReport(LATTE_REPORT_ID_POWER_DEVICE, report, sizeof(report));
 }

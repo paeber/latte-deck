@@ -2,6 +2,7 @@
 #define UPS_HID_H
 
 #include <Arduino.h>
+#include "hid_config.h"
 #include <HID-Project.h>
 #include <HID-Settings.h>
 
