@@ -4,6 +4,9 @@
 #include <Arduino.h>
 #include <HID-Project.h>
 
+#define HID_CUSTOM_LAYOUT
+#define LAYOUT_GERMAN
+
 // ============================================================================
 // Gamepad Button Assignment Configuration
 // ============================================================================
@@ -22,11 +25,11 @@
 // ============================================================================
 // Left joystick is typically used for movement (WASD keys)
 
-#define ACTION_JOYSTICK_L_UP           KEY_W
-#define ACTION_JOYSTICK_L_DOWN         KEY_S
-#define ACTION_JOYSTICK_L_LEFT         KEY_A
-#define ACTION_JOYSTICK_L_RIGHT        KEY_D
-#define ACTION_JOYSTICK_L_PRESS        KEY_SPACE   // Space key
+#define ACTION_JOYSTICK_L_UP           'w'
+#define ACTION_JOYSTICK_L_DOWN         's'
+#define ACTION_JOYSTICK_L_LEFT         'a'
+#define ACTION_JOYSTICK_L_RIGHT        'd'
+#define ACTION_JOYSTICK_L_PRESS        ' '         // Space character
 #define ACTION_JOYSTICK_L_MAX          KEY_E       // Sprint when moving joystick beyond threshold
 
 // ============================================================================

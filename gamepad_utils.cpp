@@ -32,8 +32,8 @@ void calibrateJoystick(JoystickData& joystick) {
 }
 
 void readJoystick(JoystickData& joystick) {
-    joystick.yValue = analogRead(joystick.yPin) - joystick.yZero;
-    joystick.xValue = -(analogRead(joystick.xPin) - joystick.xZero);
+    joystick.yValue = -(analogRead(joystick.yPin) - joystick.yZero);  // Invert Y-axis
+    joystick.xValue = analogRead(joystick.xPin) - joystick.xZero;     // Keep X-axis normal
     joystick.magnitude = calculateMagnitude(joystick.xValue, joystick.yValue);
     
     // Clip values to maximum
