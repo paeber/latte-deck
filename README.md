@@ -5,20 +5,25 @@ A composite HID device that provides gamepad functionality (mouse/keyboard emula
 
 ## Features
 - **Mouse and Keyboard Emulation**: Dual joystick input converted to mouse movement and keyboard key presses
-- **Composite HID Device**: Single USB device with two HID interfaces (Mouse, Keyboard)
+- **Composite HID Device**: Single USB device with multiple HID interfaces (Mouse, Keyboard, Power Device)
+- **UPS Battery Monitoring**: Real-time battery status reporting to operating system via HID Power Device
+- **Status LED Indication**: Visual feedback of battery status and charging state
 
 ## Quick Start
 
 ### Prerequisites
 - LattePanda Delta 3 (with embedded Arduino Leonardo ATmega32U4)
 - Gamepad hardware (joysticks, buttons)
+- LattePanda UPS hat (3-cell configuration)
 
 ### Installation
 1. **Install Libraries** via Arduino IDE Library Manager:
    - "HID-Project" by NicoHood
+   - "DFRobot_LPUPS" by DFRobot
 
 2. **Library Integration**:
    - The NicoHood HID library provides mouse and keyboard functionality
+   - The DFRobot LPUPS library provides UPS battery monitoring
 
 3. **Upload Code**:
    - Clone this repository
@@ -51,9 +56,12 @@ PIN_JOYSTICK_R_X = A2, PIN_JOYSTICK_R_Y = A1, PIN_JOYSTICK_R_SEL = 18
 ### HID Interface Structure
 ```
 USB Device
-├── Mouse Interface (NicoHood HID Library)
+├── Power Device Interface (Report ID 1)
+│   ├── Battery Capacity, Voltage, Current
+│   ├── Temperature, Status, Runtime
+├── Mouse Interface (Report ID 2)
 │   ├── Buttons, X/Y Movement, Scroll Wheel
-└── Keyboard Interface (NicoHood HID Library)
+└── Keyboard Interface (Report ID 3)
     ├── Modifier Keys, LED Output, Key Array
 ```
 
@@ -62,6 +70,9 @@ USB Device
 - **`gamepad.cpp`**: Main gamepad logic and state management
 - **`gamepad_utils.cpp`**: Modular utility functions for joystick and button handling
 - **`gamepad_utils.h`**: Utility function declarations and data structures
+- **`ups_control.cpp`**: UPS control and battery monitoring
+- **`ups_hid.cpp`**: HID Power Device reporting for battery status
+- **`ups.cpp`**: Battery voltage-to-SoC calculation utilities
 
 ## Configuration
 
@@ -69,9 +80,11 @@ USB Device
 ```cpp
 // Debug output
 //#define DEBUG_PRINT_GAMEPAD 1
+//#define DEBUG_PRINT_UPS 1
 
 // Feature enable
 #define ENABLE_MOUSE_KEYBOARD 1
+#define ENABLE_HID_POWER_DEVICE 1
 ```
 
 ## Troubleshooting
@@ -81,9 +94,11 @@ USB Device
 - **HID not recognized**: Check library installation and USB connection
 
 ### Testing
-1. **Device Manager**: Should show 2 HID devices without errors
-2. **Mouse**: Right joystick should move cursor
-3. **Keyboard**: Left joystick should type WASD + Space
+1. **Device Manager**: Should show 3 HID devices without errors (Power Device, Mouse, Keyboard)
+2. **Battery Status**: Windows should show battery information in system tray
+3. **Mouse**: Right joystick should move cursor
+4. **Keyboard**: Left joystick should type WASD + Space
+5. **Status LED**: Should indicate battery status and charging state
 
 ## Technical Notes
 
@@ -100,6 +115,7 @@ USB Device
 
 ## Documentation
 - [Modular Architecture](docs/modular_architecture.md) - Code organization and function reference
+- [UPS Implementation](docs/ups_implementation.md) - UPS functionality and battery monitoring
 - [Troubleshooting Guide](docs/troubleshooting.md) - Common issues and solutions
 - [Windows HID Compatibility Fix](docs/windows_hid_compatibility_fix.md) - Technical details
 - [Codebase Improvements](docs/codebase_improvements.md) - Development notes

@@ -10,6 +10,11 @@
 // Override HID-Project settings to enable Report IDs for composite devices
 // This is necessary when combining multiple HID interfaces (Mouse + Keyboard)
 
+// Enable Report IDs for Power Device interface
+#ifndef HID_POWER_DEVICE_REPORT_ID
+#define HID_POWER_DEVICE_REPORT_ID 1
+#endif
+
 // Enable Report IDs for Mouse interface
 #ifndef HID_MOUSE_REPORT_ID
 #define HID_MOUSE_REPORT_ID 2

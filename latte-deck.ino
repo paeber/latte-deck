@@ -11,6 +11,7 @@
 
 #include "usb_config.h"
 #include "gamepad.h"
+#include "ups_control.h"
 #include "config.h"
 
 int gamepadStatus = -1;
@@ -33,9 +34,23 @@ void setup() {
     setupGamepad();
     Serial.println("Gamepad setup completed");
 
+    // Initialize UPS functionality
+    #if ENABLE_HID_POWER_DEVICE
+    if (setupUPS()) {
+        Serial.println("UPS setup completed");
+    } else {
+        Serial.println("UPS setup failed - continuing without UPS");
+    }
+    #endif
+
     Serial.println("LatteDeck ready!");
 }
 
 void loop() {
   loopGamepad();
+  
+  // Update UPS functionality (non-blocking)
+  #if ENABLE_HID_POWER_DEVICE
+  loopUPS();
+  #endif
 }
