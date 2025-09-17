@@ -28,9 +28,10 @@
 #include <Arduino.h>
 #include <HardwareSerial.h>
 #include <PluggableUSB.h>
+#include <USBAPI.h>
+#include <USBDesc.h>
 
-// Forward declaration to avoid circular includes
-class UPSHIDCore;
+// Forward declaration removed - not needed since class is defined in same file
 
 // HID 'Driver'
 // ------------
@@ -165,7 +166,7 @@ private:
 // Replacement for global singleton.
 // This function prevents static-initialization-order-fiasco
 // https://isocpp.org/wiki/faq/ctors#static-init-order-on-first-use
-UPSHIDCore& UPSHIDCore();
+UPSHIDCore& getUPSHIDCore();
 
 #define D_UPS_HIDREPORT(length) { 9, 0x21, 0x01, 0x01, 0x21, 1, 0x22, lowByte(length), highByte(length) }
 

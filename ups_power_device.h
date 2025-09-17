@@ -109,6 +109,8 @@ public:
 
 };
 
+#if defined(USBCON)
 extern UPSPowerDevice_ UPSPowerDevice;
+#endif
 
 #endif

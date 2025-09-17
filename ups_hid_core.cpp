@@ -22,7 +22,7 @@
 
 #if defined(USBCON)
 
-UPSHIDCore& UPSHIDCore()
+UPSHIDCore& getUPSHIDCore()
 {
     static UPSHIDCore obj;
     return obj;

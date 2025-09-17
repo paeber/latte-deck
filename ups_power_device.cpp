@@ -24,7 +24,7 @@
 #include "ups_power_device.h"
 #include "ups_hid_core.h"
 
-#if defined(_USING_HID)
+#if defined(USBCON)
 
 //================================================================================
 //================================================================================
@@ -228,26 +228,26 @@ static const uint8_t _hidReportDescriptor[] PROGMEM = {
 UPSPowerDevice_::UPSPowerDevice_(void) {
     static UPSHIDSubDescriptor node(_hidReportDescriptor, sizeof (_hidReportDescriptor));
 
-    UPSHIDCore().AppendDescriptor(&node);
+    getUPSHIDCore().AppendDescriptor(&node);
 }
 
 void UPSPowerDevice_::begin(void) {
-    UPSHIDCore().begin();
+    getUPSHIDCore().begin();
     
     // set string ID here
     
-    UPSHIDCore().SetFeature(UPS_PD_IPRODUCT, &bProduct, sizeof(bProduct));
-    UPSHIDCore().SetFeature(UPS_PD_SERIAL, &bSerial, sizeof(bSerial));
-    UPSHIDCore().SetFeature(UPS_PD_MANUFACTURER, &bManufacturer, sizeof(bManufacturer));
+    getUPSHIDCore().SetFeature(UPS_PD_IPRODUCT, &bProduct, sizeof(bProduct));
+    getUPSHIDCore().SetFeature(UPS_PD_SERIAL, &bSerial, sizeof(bSerial));
+    getUPSHIDCore().SetFeature(UPS_PD_MANUFACTURER, &bManufacturer, sizeof(bManufacturer));
     
 }
 
 void UPSPowerDevice_::setOutput(Serial_& out) {
-    UPSHIDCore().setOutput(out);
+    getUPSHIDCore().setOutput(out);
 }
 
 void UPSPowerDevice_::setSerial(const char* s) {
-    UPSHIDCore().setSerial(s);
+    getUPSHIDCore().setSerial(s);
 }
 
 void UPSPowerDevice_::end(void) {
@@ -255,28 +255,28 @@ void UPSPowerDevice_::end(void) {
 
 int UPSPowerDevice_::sendDate(uint16_t id, uint16_t year, uint8_t month, uint8_t day) {
     uint16_t bval = (year - 1980)*512 + month * 32 + day;
-    return UPSHIDCore().SendReport(id, &bval, sizeof (bval));
+    return getUPSHIDCore().SendReport(id, &bval, sizeof (bval));
 }
 
 int UPSPowerDevice_::sendReport(uint16_t id, const void* bval, int len) {
-    return UPSHIDCore().SendReport(id, bval, len);
+    return getUPSHIDCore().SendReport(id, bval, len);
 }
 
 int UPSPowerDevice_::setFeature(uint16_t id, const void *data, int len) {
-    return UPSHIDCore().SetFeature(id, data, len);
+    return getUPSHIDCore().SetFeature(id, data, len);
 }
 
 int UPSPowerDevice_::setStringFeature(uint8_t id, const uint8_t* index, const char* data) {
     
-    int res = UPSHIDCore().SetFeature(id, index, 1);
+    int res = getUPSHIDCore().SetFeature(id, index, 1);
     
     if(res == 0) return 0;
     
-    res += UPSHIDCore().SetFeature(0xFF00 | *index , data, strlen_P(data));
+    res += getUPSHIDCore().SetFeature(0xFF00 | *index , data, strlen_P(data));
     
     return res;
 }
 
 UPSPowerDevice_ UPSPowerDevice;
 
-#endif
+#endif /* if defined(USBCON) */
