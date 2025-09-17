@@ -12,6 +12,7 @@
 #include "usb_config.h"
 #include "gamepad.h"
 #include "ups_control.h"
+#include "ups_hid.h"
 #include "config.h"
 
 int gamepadStatus = -1;

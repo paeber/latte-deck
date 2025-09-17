@@ -15,6 +15,11 @@
 #define HID_POWER_DEVICE_REPORT_ID 1
 #endif
 
+// UPS Power Device specific configuration
+#ifndef UPS_HID_POWER_DEVICE_REPORT_ID
+#define UPS_HID_POWER_DEVICE_REPORT_ID 1
+#endif
+
 // Enable Report IDs for Mouse interface
 #ifndef HID_MOUSE_REPORT_ID
 #define HID_MOUSE_REPORT_ID 2
