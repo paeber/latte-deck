@@ -4,7 +4,6 @@
 #include "gamepad_pinout.h"
 #include "gamepad_assignment.h"
 #include <stdarg.h>
-#include <HID-Project.h>
 
 // ============================================================================
 // Global Variables

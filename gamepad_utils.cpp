@@ -1,5 +1,5 @@
 #include "gamepad_utils.h"
-#include <HID-Project.h>
+#include "config.h"
 #include <math.h>
 
 // ============================================================================

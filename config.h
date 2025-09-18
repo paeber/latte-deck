@@ -3,6 +3,10 @@
 
 #include <Arduino.h>
 
+// HID Layout Configuration - must be defined before including HID-Project.h
+#define HID_CUSTOM_LAYOUT
+#define LAYOUT_US_ENGLISH
+
 #include <HID-Project.h>
 #include <HID-Settings.h>
 
@@ -20,7 +24,7 @@
 // Timing Configuration
 // ============================================================================
 
-#define MIN_UPDATE_INTERVAL         26      // Minimum update interval for USB-HID
+#define MIN_UPDATE_INTERVAL         120     // Minimum update interval for USB-HID
 #define MIN_SERIAL_REPORT_INTERVAL  5000    // Minimum interval for serial output
 
 // ============================================================================
@@ -40,8 +44,8 @@
 // ============================================================================
 
 #define DATA_LEN_MAX                0x24U
-#define OUTPUT_BUFFER_SIZE          256     // Reduced from 512 to save memory
-#define DEBUG_BUFFER_SIZE           80      // Reduced from 96 to save memory
+#define OUTPUT_BUFFER_SIZE          128     // Reduced to save memory
+#define DEBUG_BUFFER_SIZE           64      // Reduced to save memory
 
 // ============================================================================
 // Action Assignments

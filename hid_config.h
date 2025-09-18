@@ -5,7 +5,7 @@
 // This file configures Report IDs for all HID interfaces to work with Windows
 
 // Include HID-Project library configuration
-#include <HID-Settings.h>
+#include "config.h"
 
 // Override HID-Project settings to enable Report IDs for composite devices
 // This is necessary when combining multiple HID interfaces (Mouse + Keyboard)

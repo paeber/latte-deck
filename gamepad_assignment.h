@@ -2,7 +2,7 @@
 #define GAMEPAD_ASSIGNMENT_H
 
 #include <Arduino.h>
-#include <HID-Project.h>
+#include "config.h"
 
 
 // ============================================================================

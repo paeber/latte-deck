@@ -70,9 +70,14 @@ USB Device
 - **`gamepad.cpp`**: Main gamepad logic and state management
 - **`gamepad_utils.cpp`**: Modular utility functions for joystick and button handling
 - **`gamepad_utils.h`**: Utility function declarations and data structures
-- **`ups_control.cpp`**: UPS control and battery monitoring
-- **`ups_hid.cpp`**: HID Power Device reporting for battery status
-- **`ups.cpp`**: Battery voltage-to-SoC calculation utilities
+
+### UPS Module (Refactored)
+- **`ups_manager.h/cpp`**: High-level UPS management and public API
+- **`ups_core.h/cpp`**: Core UPS functionality and hardware abstraction
+- **`ups_hid.h/cpp`**: HID Power Device interface for Windows compatibility
+- **`ups_common.h/cpp`**: Shared definitions, utilities, and battery calculations
+- **`ups_hid_core.h/cpp`**: Low-level HID implementation
+- **`ups_power_device.h/cpp`**: HID Power Device protocol implementation
 
 ## Configuration
 
@@ -114,6 +119,9 @@ USB Device
 - Comprehensive debug output options
 
 ## Documentation
+- [UPS Architecture](docs/ups_architecture.md) - Refactored UPS module structure and design
+- [UPS Refactoring Plan](docs/ups_refactoring_plan.md) - Detailed refactoring analysis and benefits
+- [Windows Battery Debugging](docs/windows_battery_debugging.md) - Comprehensive HID debugging guide
 - [Modular Architecture](docs/modular_architecture.md) - Code organization and function reference
 - [UPS Implementation](docs/ups_implementation.md) - UPS functionality and battery monitoring
 - [Troubleshooting Guide](docs/troubleshooting.md) - Common issues and solutions

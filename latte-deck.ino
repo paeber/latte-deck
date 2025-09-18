@@ -5,22 +5,17 @@
  * It provides mouse and keyboard input functionality through gamepad controls.
  */
 
-// Include NicoHood HID library for mouse and keyboard functionality
-#include <HID-Project.h>
-#include <HID-Settings.h>
-
+#include "config.h"
 #include "usb_config.h"
 #include "gamepad.h"
-#include "ups_control.h"
-#include "ups_hid.h"
-#include "config.h"
+#include "ups_simple.h"
 
 int gamepadStatus = -1;
 
 void setup() {
     // Initialize serial communication
     Serial.begin(115200);
-    delay(300); // Give serial time to initialize
+    delay(3000); // Give serial time to initialize
     Serial.println("Starting LatteDeck...");
     
     // USB configuration is handled through Arduino IDE board settings
@@ -37,7 +32,7 @@ void setup() {
 
     // Initialize UPS functionality
     #if ENABLE_HID_POWER_DEVICE
-    if (setupUPS()) {
+    if (setupSimpleUPS()) {
         Serial.println("UPS setup completed");
     } else {
         Serial.println("UPS setup failed - continuing without UPS");
@@ -52,6 +47,6 @@ void loop() {
   
   // Update UPS functionality (non-blocking)
   #if ENABLE_HID_POWER_DEVICE
-  loopUPS();
+  loopSimpleUPS();
   #endif
 }
