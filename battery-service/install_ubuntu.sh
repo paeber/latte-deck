@@ -37,12 +37,24 @@ if ! command -v cargo &> /dev/null; then
     export PATH="$HOME/.cargo/bin:$PATH"
     
     # Verify installation and version
+    echo -e "${GREEN}Rust installation completed:${NC}"
     rustc --version
     cargo --version
 else
-    echo -e "${BLUE}Checking Rust version...${NC}"
+    echo -e "${BLUE}Rust is already installed. Checking version...${NC}"
     rustc --version
     cargo --version
+    
+    # Check if we need to update (only if rustup is available)
+    if command -v rustup &> /dev/null; then
+        echo -e "${BLUE}Updating Rust to latest stable version...${NC}"
+        rustup update stable
+        echo -e "${GREEN}Updated Rust version:${NC}"
+        rustc --version
+        cargo --version
+    else
+        echo -e "${YELLOW}rustup not found. Rust installation may need manual update.${NC}"
+    fi
 fi
 
 # Install required system packages
