@@ -29,12 +29,20 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-# Check if Rust is installed
+# Check if Rust is installed and get latest version
 if ! command -v cargo &> /dev/null; then
-    echo -e "${YELLOW}Rust is not installed. Installing Rust...${NC}"
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    echo -e "${YELLOW}Rust is not installed. Installing latest Rust (1.80+)...${NC}"
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
     source ~/.cargo/env
     export PATH="$HOME/.cargo/bin:$PATH"
+    
+    # Verify installation and version
+    rustc --version
+    cargo --version
+else
+    echo -e "${BLUE}Checking Rust version...${NC}"
+    rustc --version
+    cargo --version
 fi
 
 # Install required system packages

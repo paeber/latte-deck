@@ -17,6 +17,7 @@ The LatteDeck Battery Service is a high-performance background service that:
 - LatteDeck hardware connected via USB
 - Serial port access (typically `/dev/ttyACM0`)
 - Root/sudo access for installation
+- Rust 1.80+ (installed automatically by script)
 
 ## Quick Installation
 
@@ -59,8 +60,12 @@ sudo apt install -y \
     systemd
 
 # Install Rust (if not already installed)
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
 source ~/.cargo/env
+
+# Verify Rust installation
+rustc --version
+cargo --version
 ```
 
 #### 2. Build the Service

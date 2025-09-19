@@ -15,6 +15,7 @@ The LatteDeck Battery Service provides comprehensive battery monitoring and OS i
   - Memory-safe operation
   - Async I/O for efficient serial communication
   - Single binary deployment
+  - Requires Rust 1.80+ (installed automatically)
 
 ### C++ Implementation
 - **`battery_service.cpp`** - C++ service implementation
