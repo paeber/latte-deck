@@ -41,6 +41,7 @@ void handleSprintKey(JoystickData& joystick, uint8_t sprintKey, int threshold, b
 
 // Mouse Control
 void processMouseMovement(JoystickData& joystick, int sensitivity);
+float calculateMouseDelta(int joystickValue, int sensitivity);
 
 // Key Release Management
 void releaseAllKeys();

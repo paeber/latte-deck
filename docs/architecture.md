@@ -104,9 +104,12 @@ The mouse movement system has been enhanced to support smooth diagonal movement:
 **New Implementation Features:**
 - **Single `Mouse.move()` call** with both X and Y deltas
 - **Deadzone handling** to prevent drift (configurable via `JOYSTICK_X_DEADZONE`, `JOYSTICK_Y_DEADZONE`)
-- **Linear sensitivity scaling** for more predictable movement
+- **Multi-zone scaling** for different precision levels
 - **Magnitude normalization** to ensure consistent speed in all directions
 - **Smooth diagonal movement** without stepping artifacts
+- **Precision zone** (0-100): High sensitivity for fine movements
+- **Normal zone** (100-300): Balanced sensitivity for regular use
+- **Fast zone** (300-500): Reduced sensitivity with exponential acceleration
 
 #### Technical Details
 
@@ -116,9 +119,9 @@ void processMouseMovement(JoystickData& joystick, int sensitivity) {
     int xValue = abs(joystick.xValue) > JOYSTICK_X_DEADZONE ? joystick.xValue : 0;
     int yValue = abs(joystick.yValue) > JOYSTICK_Y_DEADZONE ? joystick.yValue : 0;
     
-    // Calculate movement deltas using linear scaling
-    float xDelta = (float)xValue / sensitivity;
-    float yDelta = (float)yValue / sensitivity;
+    // Multi-zone scaling for better precision and range
+    float xDelta = calculateMouseDelta(xValue, sensitivity);
+    float yDelta = calculateMouseDelta(yValue, sensitivity);
     
     // Apply magnitude-based scaling for consistent speed
     float magnitude = sqrt(xDelta * xDelta + yDelta * yDelta);
@@ -127,16 +130,48 @@ void processMouseMovement(JoystickData& joystick, int sensitivity) {
     // Single Mouse.move() call for smooth diagonal movement
     Mouse.move((int)xDelta, (int)yDelta);
 }
+
+float calculateMouseDelta(int joystickValue, int sensitivity) {
+    int absValue = abs(joystickValue);
+    int sign = joystickValue >= 0 ? 1 : -1;
+    float delta = 0.0f;
+    
+    if (absValue <= 100) {
+        // Precision zone: 0-5 pixel range
+        delta = (float)absValue / 20.0f;
+    }
+    else if (absValue <= 300) {
+        // Normal zone: 5-13 pixel range
+        delta = 5.0f + ((float)(absValue - 100) / 25.0f);
+    }
+    else {
+        // Fast zone: 13-20 pixel range with exponential curve
+        float normalizedValue = (float)(absValue - 300) / 200.0f;
+        delta = 13.0f + (normalizedValue * normalizedValue * 7.0f);
+    }
+    
+    // Apply global sensitivity scaling
+    delta = delta * (100.0f / sensitivity);
+    return delta * sign;
+}
 ```
 
 #### Configuration Parameters
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `JOYSTICK_MOUSE_SENSITIVITY` | 1000 | Mouse sensitivity (higher = slower) |
+| `JOYSTICK_MOUSE_SENSITIVITY` | 100 | Mouse sensitivity (higher = slower) |
 | `JOYSTICK_X_DEADZONE` | 10 | X-axis deadzone to prevent drift |
 | `JOYSTICK_Y_DEADZONE` | 10 | Y-axis deadzone to prevent drift |
 | `JOYSTICK_SIDE_MAX` | 500 | Maximum joystick value for clipping |
+
+#### Scaling Zones
+
+| Zone | Joystick Range | Mouse Range | Characteristics |
+|------|----------------|-------------|-----------------|
+| **Precision** | 0-100 | 0-5 pixels | High sensitivity for fine movements |
+| **Normal** | 100-300 | 5-13 pixels | Balanced sensitivity for regular use |
+| **Fast** | 300-500 | 13-20 pixels | Exponential acceleration for quick movements |
 
 ## UPS Architecture
 

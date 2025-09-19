@@ -164,22 +164,46 @@ void processMouseMovement(JoystickData& joystick, int sensitivity) {
     int xValue = abs(joystick.xValue) > JOYSTICK_X_DEADZONE ? joystick.xValue : 0;
     int yValue = abs(joystick.yValue) > JOYSTICK_Y_DEADZONE ? joystick.yValue : 0;
     
+    #if DEBUG_PRINT_GAMEPAD
+    static unsigned long lastDebug = 0;
+    unsigned long currentMillis = millis();
+    if (currentMillis - lastDebug >= 200) { // Debug every 200ms
+        lastDebug = currentMillis;
+        Serial.print("Mouse Debug - Raw X: ");
+        Serial.print(joystick.xValue);
+        Serial.print(", Raw Y: ");
+        Serial.print(joystick.yValue);
+        Serial.print(", Filtered X: ");
+        Serial.print(xValue);
+        Serial.print(", Filtered Y: ");
+        Serial.println(yValue);
+    }
+    #endif
+    
     // If no movement in either axis, don't move the mouse
     if (xValue == 0 && yValue == 0) {
         return;
     }
     
-    // Calculate movement deltas using linear scaling for more predictable movement
-    // Scale based on sensitivity (higher sensitivity = slower movement)
-    float xDelta = (float)xValue / sensitivity;
-    float yDelta = (float)yValue / sensitivity;
+    // Multi-zone scaling for better precision and range
+    float xDelta = calculateMouseDelta(xValue, sensitivity);
+    float yDelta = calculateMouseDelta(yValue, sensitivity);
+    
+    #if DEBUG_PRINT_GAMEPAD
+    if (currentMillis - lastDebug < 50) { // Only print if we just printed above
+        Serial.print("Deltas - X: ");
+        Serial.print(xDelta);
+        Serial.print(", Y: ");
+        Serial.println(yDelta);
+    }
+    #endif
     
     // Apply magnitude-based scaling to maintain consistent speed in all directions
     // This ensures diagonal movement feels the same speed as cardinal directions
     float magnitude = sqrt(xDelta * xDelta + yDelta * yDelta);
     if (magnitude > 0) {
         // Normalize to prevent faster diagonal movement
-        float maxMagnitude = (float)JOYSTICK_SIDE_MAX / sensitivity;
+        float maxMagnitude = 10.0f; // Maximum mouse movement per frame
         if (magnitude > maxMagnitude) {
             xDelta = (xDelta / magnitude) * maxMagnitude;
             yDelta = (yDelta / magnitude) * maxMagnitude;
@@ -187,7 +211,61 @@ void processMouseMovement(JoystickData& joystick, int sensitivity) {
     }
     
     // Move mouse with both X and Y deltas in a single call for smooth diagonal movement
-    Mouse.move((int)xDelta, (int)yDelta);
+    int moveX = (int)xDelta;
+    int moveY = (int)yDelta;
+    
+    #if DEBUG_PRINT_GAMEPAD
+    if (currentMillis - lastDebug < 50) { // Only print if we just printed above
+        Serial.print("Final Move - X: ");
+        Serial.print(moveX);
+        Serial.print(", Y: ");
+        Serial.println(moveY);
+    }
+    #endif
+    
+    if (moveX != 0 || moveY != 0) {
+        Mouse.move(moveX, moveY);
+    }
+}
+
+// ============================================================================
+// Advanced Mouse Scaling Functions
+// ============================================================================
+
+float calculateMouseDelta(int joystickValue, int sensitivity) {
+    // Get absolute value for calculations
+    int absValue = abs(joystickValue);
+    int sign = joystickValue >= 0 ? 1 : -1;
+    
+    // Multi-zone scaling for different precision levels
+    float delta = 0.0f;
+    
+    if (absValue <= 100) {
+        // Precision zone (0-100): Very sensitive for fine movements
+        // Linear scaling with high sensitivity
+        delta = (float)absValue / 20.0f; // 0-5 pixel range
+    }
+    else if (absValue <= 300) {
+        // Normal zone (100-300): Balanced sensitivity
+        // Linear scaling with medium sensitivity
+        delta = 5.0f + ((float)(absValue - 100) / 25.0f); // 5-13 pixel range
+    }
+    else {
+        // Fast zone (300-500): Reduced sensitivity for quick movements
+        // Exponential curve for natural acceleration
+        float normalizedValue = (float)(absValue - 300) / 200.0f; // 0.0 to 1.0
+        delta = 13.0f + (normalizedValue * normalizedValue * 7.0f); // 13-20 pixel range
+    }
+    
+    // Apply global sensitivity scaling
+    delta = delta * (100.0f / sensitivity);
+    
+    // Ensure minimum movement for very small inputs
+    if (delta < 0.1f && absValue > 0) {
+        delta = 0.1f;
+    }
+    
+    return delta * sign;
 }
 
 // ============================================================================
