@@ -92,7 +92,9 @@ void loopGamepad()
                          ACTION_JOYSTICK_L_LEFT, ACTION_JOYSTICK_L_RIGHT, JOYSTICK_BINARY_THRESHOLD);
     
     // Handle sprint key
-    handleSprintKey(leftJoystick, ACTION_JOYSTICK_L_MAX, SPRINT_THRESHOLD, sprintActive);
+    if (SPRINT_THRESHOLD_ENABLED) {
+      handleSprintKey(leftJoystick, ACTION_JOYSTICK_L_MAX, SPRINT_THRESHOLD, sprintActive);
+    }
 
     // Debug output
     #ifdef DEBUG_PRINT_GAMEPAD

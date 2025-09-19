@@ -10,23 +10,7 @@
 // This file defines the hardware pin assignments for the LatteDeck gamepad
 // Modify these definitions to match your hardware wiring
 
-// ============================================================================
-// Gamepad Configuration Constants
-// ============================================================================
 
-// Joystick Inversion Settings
-#define JOYSTICK_R_INVERT_X         (1)     // Non-inverted right joystick X-axis
-#define JOYSTICK_R_INVERT_Y         (-1)    // Invert right joystick Y-axis
-#define JOYSTICK_L_INVERT_X         (-1)    // Invert left joystick X-axis
-#define JOYSTICK_L_INVERT_Y         (-1)    // Invert left joystick Y-axis
-
-// Sensitivity and Threshold Settings
-#define JOYSTICK_MOUSE_SENSITIVITY  500     // Mouse sensitivity (higher = slower)
-#define JOYSTICK_SIDE_MAX           500     // Maximum joystick value for clipping
-#define SPRINT_THRESHOLD            480     // Threshold for sprint activation
-#define JOYSTICK_X_DEADZONE         10      // Deadzone for X-axis to prevent drift
-#define JOYSTICK_Y_DEADZONE         10      // Deadzone for Y-axis to prevent drift
-#define JOYSTICK_BINARY_THRESHOLD   100     // Threshold for binary joystick movement
 
 // ============================================================================
 // Gamepad Pin Definitions

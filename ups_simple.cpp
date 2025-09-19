@@ -297,18 +297,20 @@ void SimpleUPS::updateStatusLED() {
 }
 
 void SimpleUPS::reportBatteryStatus() {
-    // Simplified HID reporting - just print to serial for now
-    // This eliminates the complex HID implementation that was causing crashes
-    #if DEBUG_PRINT_UPS
-    Serial.print("UPS Report - Capacity: ");
-    Serial.print(current_status.capacity_percent);
-    Serial.print("%, Voltage: ");
-    Serial.print(current_status.voltage_mV);
-    Serial.print("mV, Charging: ");
-    Serial.print(current_status.is_charging ? "Yes" : "No");
-    Serial.print(", Connected: ");
-    Serial.println(current_status.is_connected ? "Yes" : "No");
-    #endif
+    // JSON status report - always compiled and printed
+    Serial.print("{\"ups\":{\"voltage_mV\":");
+    Serial.print(current_status.voltage_mV);   // Battery voltage
+    Serial.print(",\"current_mA\":");
+    Serial.print(current_status.current_mA);   // Battery current
+    Serial.print(",\"capacity_percent\":");
+    Serial.print(current_status.capacity_percent);   // Battery capacity percentage
+    Serial.print(",\"is_charging\":");
+    Serial.print(current_status.is_charging ? "true" : "false");   // Battery is charging
+    Serial.print(",\"is_connected\":");
+    Serial.print(current_status.is_connected ? "true" : "false");   // Communication with the UPS is established
+    Serial.print(",\"last_update_ms\":");
+    Serial.print(current_status.last_update_ms);   // Timestamp of last successful update
+    Serial.println("}}");
 }
 
 // ============================================================================
