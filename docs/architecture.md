@@ -62,7 +62,7 @@ struct JoystickData {
 - `initializeJoystick()` - Setup joystick data structure
 - `readJoystick()` - Read analog values with calibration
 - `processAxisMovement()` - Handle directional key presses
-- `processMouseMovement()` - Convert joystick to mouse movement
+- `processMouseMovement()` - Convert joystick to smooth mouse movement with diagonal support
 - `handleButtonPress()` - Generic button handler
 
 ### Button Assignments
@@ -89,6 +89,54 @@ struct JoystickData {
 | | R2 (Top) | Space | Jump |
 | | R3 (Middle) | R | Reload/Interact |
 | | R4 (Bottom) | E | Use/Interact |
+
+### Mouse Movement Implementation
+
+#### Improved Diagonal Movement
+
+The mouse movement system has been enhanced to support smooth diagonal movement:
+
+**Previous Implementation Issues:**
+- Two separate `Mouse.move()` calls for X and Y axes
+- Created "staircase" effect during diagonal movement
+- Inconsistent movement speed in different directions
+
+**New Implementation Features:**
+- **Single `Mouse.move()` call** with both X and Y deltas
+- **Deadzone handling** to prevent drift (configurable via `JOYSTICK_X_DEADZONE`, `JOYSTICK_Y_DEADZONE`)
+- **Linear sensitivity scaling** for more predictable movement
+- **Magnitude normalization** to ensure consistent speed in all directions
+- **Smooth diagonal movement** without stepping artifacts
+
+#### Technical Details
+
+```cpp
+void processMouseMovement(JoystickData& joystick, int sensitivity) {
+    // Apply deadzone to prevent drift
+    int xValue = abs(joystick.xValue) > JOYSTICK_X_DEADZONE ? joystick.xValue : 0;
+    int yValue = abs(joystick.yValue) > JOYSTICK_Y_DEADZONE ? joystick.yValue : 0;
+    
+    // Calculate movement deltas using linear scaling
+    float xDelta = (float)xValue / sensitivity;
+    float yDelta = (float)yValue / sensitivity;
+    
+    // Apply magnitude-based scaling for consistent speed
+    float magnitude = sqrt(xDelta * xDelta + yDelta * yDelta);
+    // ... normalization logic ...
+    
+    // Single Mouse.move() call for smooth diagonal movement
+    Mouse.move((int)xDelta, (int)yDelta);
+}
+```
+
+#### Configuration Parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `JOYSTICK_MOUSE_SENSITIVITY` | 1000 | Mouse sensitivity (higher = slower) |
+| `JOYSTICK_X_DEADZONE` | 10 | X-axis deadzone to prevent drift |
+| `JOYSTICK_Y_DEADZONE` | 10 | Y-axis deadzone to prevent drift |
+| `JOYSTICK_SIDE_MAX` | 500 | Maximum joystick value for clipping |
 
 ## UPS Architecture
 

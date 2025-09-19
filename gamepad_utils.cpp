@@ -160,12 +160,34 @@ void handleSprintKey(JoystickData& joystick, uint8_t sprintKey, int threshold, b
 // ============================================================================
 
 void processMouseMovement(JoystickData& joystick, int sensitivity) {
-    if (joystick.yValue != 0) {
-        Mouse.move(0, (sgn(joystick.yValue) * 0.01 * (abs(pow(joystick.yValue, 2)) / sensitivity)));
+    // Apply deadzone to prevent drift
+    int xValue = abs(joystick.xValue) > JOYSTICK_X_DEADZONE ? joystick.xValue : 0;
+    int yValue = abs(joystick.yValue) > JOYSTICK_Y_DEADZONE ? joystick.yValue : 0;
+    
+    // If no movement in either axis, don't move the mouse
+    if (xValue == 0 && yValue == 0) {
+        return;
     }
-    if (joystick.xValue != 0) {
-        Mouse.move((sgn(joystick.xValue) * 0.01 * (abs(pow(joystick.xValue, 2)) / sensitivity)), 0);
+    
+    // Calculate movement deltas using linear scaling for more predictable movement
+    // Scale based on sensitivity (higher sensitivity = slower movement)
+    float xDelta = (float)xValue / sensitivity;
+    float yDelta = (float)yValue / sensitivity;
+    
+    // Apply magnitude-based scaling to maintain consistent speed in all directions
+    // This ensures diagonal movement feels the same speed as cardinal directions
+    float magnitude = sqrt(xDelta * xDelta + yDelta * yDelta);
+    if (magnitude > 0) {
+        // Normalize to prevent faster diagonal movement
+        float maxMagnitude = (float)JOYSTICK_SIDE_MAX / sensitivity;
+        if (magnitude > maxMagnitude) {
+            xDelta = (xDelta / magnitude) * maxMagnitude;
+            yDelta = (yDelta / magnitude) * maxMagnitude;
+        }
     }
+    
+    // Move mouse with both X and Y deltas in a single call for smooth diagonal movement
+    Mouse.move((int)xDelta, (int)yDelta);
 }
 
 // ============================================================================
