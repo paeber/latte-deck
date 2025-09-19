@@ -25,7 +25,8 @@ SimpleUPS simple_ups;
 
 SimpleUPS::SimpleUPS() : ups_library(nullptr), initialized(false), connected(false), 
                         last_read_ms(0), last_report_ms(0), last_led_update_ms(0),
-                        consecutive_failures(0), led_cycle_start_ms(0), led_brightness(0), led_state(false) {
+                        consecutive_failures(0), led_cycle_start_ms(0), led_brightness(0), led_state(false),
+                        previous_capacity_percent(0) {
     current_status.voltage_mV = 0;
     current_status.current_mA = 0;
     current_status.capacity_percent = 0;
@@ -127,16 +128,24 @@ void SimpleUPS::update() {
         last_led_update_ms = current_time;
     }
     
-    // Conservative HID reporting to prevent crashes
-    uint32_t reportInterval = 30000; // Default 30 seconds
-    if (consecutive_failures > 2) {
-        reportInterval = 60000; // 60 seconds if failures
-    } else if (consecutive_failures > 0) {
-        reportInterval = 45000; // 45 seconds if some failures
+    // Check for capacity changes and trigger immediate report if needed
+    bool capacity_changed = (current_status.capacity_percent != previous_capacity_percent);
+    if (capacity_changed) {
+        previous_capacity_percent = current_status.capacity_percent;
     }
     
-    // Report battery status at dynamic interval
+    // Use MIN_SERIAL_REPORT_INTERVAL as the base reporting interval
+    uint32_t reportInterval = MIN_SERIAL_REPORT_INTERVAL;
+    
+    // Report battery status at regular interval or when capacity changes
+    bool should_report = false;
     if (current_time - last_report_ms >= reportInterval) {
+        should_report = true;
+    } else if (capacity_changed && (current_time - last_report_ms >= MIN_SERIAL_REPORT_INTERVAL)) {
+        should_report = true;
+    }
+    
+    if (should_report) {
         reportBatteryStatus();
         last_report_ms = current_time;
     }

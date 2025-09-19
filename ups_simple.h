@@ -59,6 +59,7 @@ private:
     
     // Current status
     SimpleUPSStatus current_status;
+    uint16_t previous_capacity_percent;  // Track previous capacity for change detection
     
     // Internal methods
     bool readRawData(uint8_t* regBuf);

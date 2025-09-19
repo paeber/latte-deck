@@ -25,7 +25,8 @@
 // ============================================================================
 
 #define MIN_UPDATE_INTERVAL         120     // Minimum update interval for USB-HID
-#define MIN_SERIAL_REPORT_INTERVAL  5000    // Minimum interval for serial output
+#define MIN_SERIAL_REPORT_INTERVAL  2000    // Minimum interval for battery report (in ms)
+#define SERIAL_REPORT_INTERVAL      10000   // Serial report interval (in ms)
 
 // ============================================================================
 // Feature Enable Flags
@@ -33,7 +34,7 @@
 
 // Debug configuration - uncomment to enable
 //#define DEBUG_PRINT_GAMEPAD 1
-#define DEBUG_PRINT_UPS 1
+//#define DEBUG_PRINT_UPS 1
 
 // Feature enable flags
 #define ENABLE_MOUSE_KEYBOARD 1
