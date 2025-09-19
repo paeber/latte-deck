@@ -18,6 +18,10 @@ JoystickData rightJoystick;
 bool gamepadDisabled = false;
 bool sprintActive = false;
 
+// Button state flags
+int btnL1Flag = 0, btnL2Flag = 0, btnL3Flag = 0, btnL4Flag = 0;
+int btnR1Flag = 0, btnR2Flag = 0, btnR3Flag = 0, btnR4Flag = 0;
+
 void printGamepad(const char* msg){
   #if DEBUG_PRINT_GAMEPAD
   Serial.print("Gamepad: ");
@@ -87,6 +91,16 @@ void loopGamepad()
     handleButtonPress(PIN_JOYSTICK_R_SEL, rightJoystick.selFlag, MOUSE_LEFT, "right joystick button");
     handleButtonPress(PIN_JOYSTICK_L_SEL, leftJoystick.selFlag, ACTION_JOYSTICK_L_PRESS, "left joystick button");
     
+    // Handle physical button presses
+    handleButtonPress(PIN_BTN_L1, btnL1Flag, ACTION_BTN_L1, "L1 button");
+    handleButtonPress(PIN_BTN_L2, btnL2Flag, ACTION_BTN_L2, "L2 button");
+    handleButtonPress(PIN_BTN_L3, btnL3Flag, ACTION_BTN_L3, "L3 button");
+    handleButtonPress(PIN_BTN_L4, btnL4Flag, ACTION_BTN_L4, "L4 button");
+    handleButtonPress(PIN_BTN_R1, btnR1Flag, ACTION_BTN_R1, "R1 button");
+    handleButtonPress(PIN_BTN_R2, btnR2Flag, ACTION_BTN_R2, "R2 button");
+    handleButtonPress(PIN_BTN_R3, btnR3Flag, ACTION_BTN_R3, "R3 button");
+    handleButtonPress(PIN_BTN_R4, btnR4Flag, ACTION_BTN_R4, "R4 button");
+    
     // Handle directional keys (left joystick)
     handleDirectionalKeys(leftJoystick, ACTION_JOYSTICK_L_UP, ACTION_JOYSTICK_L_DOWN, 
                          ACTION_JOYSTICK_L_LEFT, ACTION_JOYSTICK_L_RIGHT, JOYSTICK_BINARY_THRESHOLD);
@@ -124,6 +138,10 @@ void loopGamepad()
       leftJoystick.selFlag = 0;
       rightJoystick.selFlag = 0;
       sprintActive = false;
+      
+      // Reset button states
+      btnL1Flag = btnL2Flag = btnL3Flag = btnL4Flag = 0;
+      btnR1Flag = btnR2Flag = btnR3Flag = btnR4Flag = 0;
       
       gamepadDisabled = true;
       Serial.println("Gamepad disabled");

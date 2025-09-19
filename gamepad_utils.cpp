@@ -92,14 +92,24 @@ void handleButtonPress(int pin, int& flag, uint8_t key, const char* action) {
     
     if ((digitalRead(pin) == 0) && (!flag)) {
         flag = 1;
-        Keyboard.press(key);
+        // Check if it's a mouse button
+        if (key == MOUSE_LEFT || key == MOUSE_RIGHT) {
+            Mouse.press(key);
+        } else {
+            Keyboard.press(key);
+        }
         #if DEBUG_PRINT_GAMEPAD
         Serial.print("Gamepad: Pressing ");
         Serial.println(action);
         #endif
     } else if ((digitalRead(pin)) && (flag)) {
         flag = 0;
-        Keyboard.release(key);
+        // Check if it's a mouse button
+        if (key == MOUSE_LEFT || key == MOUSE_RIGHT) {
+            Mouse.release(key);
+        } else {
+            Keyboard.release(key);
+        }
         #if DEBUG_PRINT_GAMEPAD
         Serial.print("Gamepad: Releasing ");
         Serial.println(action);
@@ -203,7 +213,7 @@ void processMouseMovement(JoystickData& joystick, int sensitivity) {
     float magnitude = sqrt(xDelta * xDelta + yDelta * yDelta);
     if (magnitude > 0) {
         // Normalize to prevent faster diagonal movement
-        float maxMagnitude = 10.0f; // Maximum mouse movement per frame
+        float maxMagnitude = 6.0f; // Maximum mouse movement per frame
         if (magnitude > maxMagnitude) {
             xDelta = (xDelta / magnitude) * maxMagnitude;
             yDelta = (yDelta / magnitude) * maxMagnitude;
@@ -243,18 +253,18 @@ float calculateMouseDelta(int joystickValue, int sensitivity) {
     if (absValue <= 100) {
         // Precision zone (0-100): Very sensitive for fine movements
         // Linear scaling with high sensitivity
-        delta = (float)absValue / 20.0f; // 0-5 pixel range
+        delta = (float)absValue / 30.0f; // 0-3.3 pixel range
     }
     else if (absValue <= 300) {
         // Normal zone (100-300): Balanced sensitivity
         // Linear scaling with medium sensitivity
-        delta = 5.0f + ((float)(absValue - 100) / 25.0f); // 5-13 pixel range
+        delta = 3.3f + ((float)(absValue - 100) / 40.0f); // 3.3-8.3 pixel range
     }
     else {
         // Fast zone (300-500): Reduced sensitivity for quick movements
         // Exponential curve for natural acceleration
         float normalizedValue = (float)(absValue - 300) / 200.0f; // 0.0 to 1.0
-        delta = 13.0f + (normalizedValue * normalizedValue * 7.0f); // 13-20 pixel range
+        delta = 8.3f + (normalizedValue * normalizedValue * 4.0f); // 8.3-12.3 pixel range
     }
     
     // Apply global sensitivity scaling

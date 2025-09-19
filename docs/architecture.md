@@ -137,17 +137,17 @@ float calculateMouseDelta(int joystickValue, int sensitivity) {
     float delta = 0.0f;
     
     if (absValue <= 100) {
-        // Precision zone: 0-5 pixel range
-        delta = (float)absValue / 20.0f;
+        // Precision zone: 0-3.3 pixel range
+        delta = (float)absValue / 30.0f;
     }
     else if (absValue <= 300) {
-        // Normal zone: 5-13 pixel range
-        delta = 5.0f + ((float)(absValue - 100) / 25.0f);
+        // Normal zone: 3.3-8.3 pixel range
+        delta = 3.3f + ((float)(absValue - 100) / 40.0f);
     }
     else {
-        // Fast zone: 13-20 pixel range with exponential curve
+        // Fast zone: 8.3-12.3 pixel range with exponential curve
         float normalizedValue = (float)(absValue - 300) / 200.0f;
-        delta = 13.0f + (normalizedValue * normalizedValue * 7.0f);
+        delta = 8.3f + (normalizedValue * normalizedValue * 4.0f);
     }
     
     // Apply global sensitivity scaling
@@ -169,9 +169,9 @@ float calculateMouseDelta(int joystickValue, int sensitivity) {
 
 | Zone | Joystick Range | Mouse Range | Characteristics |
 |------|----------------|-------------|-----------------|
-| **Precision** | 0-100 | 0-5 pixels | High sensitivity for fine movements |
-| **Normal** | 100-300 | 5-13 pixels | Balanced sensitivity for regular use |
-| **Fast** | 300-500 | 13-20 pixels | Exponential acceleration for quick movements |
+| **Precision** | 0-100 | 0-3.3 pixels | High sensitivity for fine movements |
+| **Normal** | 100-300 | 3.3-8.3 pixels | Balanced sensitivity for regular use |
+| **Fast** | 300-500 | 8.3-12.3 pixels | Exponential acceleration for quick movements |
 
 ## UPS Architecture
 
