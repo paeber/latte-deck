@@ -6,8 +6,9 @@ A composite HID device that provides gamepad functionality (mouse/keyboard emula
 ## Features
 - **Mouse and Keyboard Emulation**: Dual joystick input converted to mouse movement and keyboard key presses
 - **Composite HID Device**: Single USB device with multiple HID interfaces (Mouse, Keyboard, Power Device)
-- **UPS Battery Monitoring**: Real-time battery status reporting to operating system via HID Power Device
+- **UPS Battery Monitoring**: Real-time battery status reporting via JSON serial communication
 - **Status LED Indication**: Visual feedback of battery status and charging state
+- **OS Integration**: Native battery device integration for Ubuntu and other Linux distributions
 
 ## Quick Start
 
@@ -72,12 +73,16 @@ USB Device
 - **`gamepad_utils.h`**: Utility function declarations and data structures
 
 ### UPS Module (Refactored)
-- **`ups_manager.h/cpp`**: High-level UPS management and public API
-- **`ups_core.h/cpp`**: Core UPS functionality and hardware abstraction
-- **`ups_hid.h/cpp`**: HID Power Device interface for Windows compatibility
-- **`ups_common.h/cpp`**: Shared definitions, utilities, and battery calculations
-- **`ups_hid_core.h/cpp`**: Low-level HID implementation
-- **`ups_power_device.h/cpp`**: HID Power Device protocol implementation
+- **`ups_simple.h/cpp`**: Simplified UPS functionality with JSON reporting
+- **`DFRobot_LPUPS.h/cpp`**: DFRobot library integration for UPS communication
+
+### Battery Service (OS Integration)
+- **`battery-service/`**: Complete battery monitoring and OS integration
+  - **Rust Implementation**: High-performance service for Ubuntu
+  - **C++ Implementation**: Cross-platform service
+  - **Python Scripts**: Monitoring and system integration
+  - **Installation Scripts**: Automated deployment
+  - **Documentation**: Complete deployment guides
 
 ## Configuration
 
@@ -92,15 +97,54 @@ USB Device
 #define ENABLE_HID_POWER_DEVICE 1
 ```
 
+## Battery Monitoring
+
+### Ubuntu Integration (Recommended)
+The LatteDeck now includes a comprehensive battery monitoring system that integrates natively with Ubuntu:
+
+```bash
+# Quick installation
+cd battery-service
+sudo ./install_ubuntu.sh
+
+# Check battery status
+cat /sys/class/power_supply/latte_deck_battery/capacity
+```
+
+**Features:**
+- **Native OS Integration**: Appears as system battery in Ubuntu
+- **System Tray Display**: Battery percentage and charging status
+- **High Performance**: Rust implementation uses only 2-8MB RAM
+- **Real-time Monitoring**: JSON serial communication with Arduino
+- **Automatic Service**: Runs as systemd service with auto-start
+
+For complete documentation, see [`battery-service/README.md`](battery-service/README.md).
+
+### Python Monitoring (Alternative)
+For development and testing, Python scripts are available:
+
+```bash
+# Basic monitoring
+python3 battery-service/battery_monitor.py /dev/ttyACM0 115200
+
+# System integration
+python3 battery-service/battery_system_integration.py /dev/ttyACM0 115200
+```
+
 ## Troubleshooting
 
 ### Windows Issues
 - **"This device cannot start (Code 10)"**: See [Troubleshooting Guide](docs/troubleshooting.md)
 - **HID not recognized**: Check library installation and USB connection
 
+### Ubuntu Battery Issues
+- **Service not starting**: Check `sudo systemctl status latte-deck-battery`
+- **No battery device**: Verify service logs with `sudo journalctl -u latte-deck-battery -f`
+- **Serial port issues**: Test with `sudo minicom -D /dev/ttyACM0 -b 115200`
+
 ### Testing
 1. **Device Manager**: Should show 3 HID devices without errors (Power Device, Mouse, Keyboard)
-2. **Battery Status**: Windows should show battery information in system tray
+2. **Battery Status**: Ubuntu should show battery information in system tray
 3. **Mouse**: Right joystick should move cursor
 4. **Keyboard**: Left joystick should type WASD + Space
 5. **Status LED**: Should indicate battery status and charging state
