@@ -24,8 +24,9 @@
 #define JOYSTICK_MOUSE_SENSITIVITY  500     // Mouse sensitivity (higher = slower)
 #define JOYSTICK_SIDE_MAX           500     // Maximum joystick value for clipping
 #define SPRINT_THRESHOLD            480     // Threshold for sprint activation
-#define JOYSTICK_X_DEADZONE         20      // Deadzone for X-axis to prevent drift
-#define JOYSTICK_Y_DEADZONE         20      // Deadzone for Y-axis to prevent drift
+#define JOYSTICK_X_DEADZONE         10      // Deadzone for X-axis to prevent drift
+#define JOYSTICK_Y_DEADZONE         10      // Deadzone for Y-axis to prevent drift
+#define JOYSTICK_BINARY_THRESHOLD   100     // Threshold for binary joystick movement
 
 // ============================================================================
 // Gamepad Pin Definitions

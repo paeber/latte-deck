@@ -78,7 +78,7 @@ void loopGamepad()
     readJoystick(rightJoystick, JOYSTICK_R_INVERT_X, JOYSTICK_R_INVERT_Y);
     
     // Process axis movements for directional keys
-    processAxisMovement(leftJoystick, 200);
+    processAxisMovement(leftJoystick, JOYSTICK_BINARY_THRESHOLD);
     
     // Handle mouse movement (right joystick)
     processMouseMovement(rightJoystick, JOYSTICK_MOUSE_SENSITIVITY);
@@ -89,7 +89,7 @@ void loopGamepad()
     
     // Handle directional keys (left joystick)
     handleDirectionalKeys(leftJoystick, ACTION_JOYSTICK_L_UP, ACTION_JOYSTICK_L_DOWN, 
-                         ACTION_JOYSTICK_L_LEFT, ACTION_JOYSTICK_L_RIGHT, 200);
+                         ACTION_JOYSTICK_L_LEFT, ACTION_JOYSTICK_L_RIGHT, JOYSTICK_BINARY_THRESHOLD);
     
     // Handle sprint key
     handleSprintKey(leftJoystick, ACTION_JOYSTICK_L_MAX, SPRINT_THRESHOLD, sprintActive);
