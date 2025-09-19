@@ -1,5 +1,5 @@
 #include "ups_simple.h"
-#include <DFRobot_LPUPS.h>
+#include "DFRobot_LPUPS.h"
 #include <Wire.h>
 
 // DFRobot LPUPS Register Definitions
