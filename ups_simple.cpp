@@ -127,12 +127,13 @@ void SimpleUPS::update() {
         last_led_update_ms = current_time;
     }
     
-    // Conservative HID reporting to prevent crashes
-    uint32_t reportInterval = 30000; // Default 30 seconds
+    // JSON reporting with configurable interval
+    #if UPS_JSON_ENABLED
+    uint32_t reportInterval = UPS_JSON_REPORT_INTERVAL;
     if (consecutive_failures > 2) {
-        reportInterval = 60000; // 60 seconds if failures
+        reportInterval = UPS_JSON_REPORT_INTERVAL * 2; // Double interval if failures
     } else if (consecutive_failures > 0) {
-        reportInterval = 45000; // 45 seconds if some failures
+        reportInterval = UPS_JSON_REPORT_INTERVAL * 3 / 2; // 1.5x interval if some failures
     }
     
     // Report battery status at dynamic interval
@@ -140,6 +141,7 @@ void SimpleUPS::update() {
         reportBatteryStatus();
         last_report_ms = current_time;
     }
+    #endif
 }
 
 bool SimpleUPS::readRawData(uint8_t* regBuf) {
@@ -297,18 +299,28 @@ void SimpleUPS::updateStatusLED() {
 }
 
 void SimpleUPS::reportBatteryStatus() {
-    // Simplified HID reporting - just print to serial for now
-    // This eliminates the complex HID implementation that was causing crashes
-    #if DEBUG_PRINT_UPS
-    Serial.print("UPS Report - Capacity: ");
-    Serial.print(current_status.capacity_percent);
-    Serial.print("%, Voltage: ");
+    // JSON format battery status report for Python parsing
+    Serial.print("UPS_JSON:");
+    Serial.print("{");
+    Serial.print("\"timestamp\":");
+    Serial.print(millis());
+    Serial.print(",\"voltage_mV\":");
     Serial.print(current_status.voltage_mV);
-    Serial.print("mV, Charging: ");
-    Serial.print(current_status.is_charging ? "Yes" : "No");
-    Serial.print(", Connected: ");
-    Serial.println(current_status.is_connected ? "Yes" : "No");
-    #endif
+    Serial.print(",\"current_mA\":");
+    Serial.print(current_status.current_mA);
+    Serial.print(",\"capacity_percent\":");
+    Serial.print(current_status.capacity_percent);
+    Serial.print(",\"temperature_celsius\":");
+    Serial.print(current_status.temperature_celsius);
+    Serial.print(",\"is_charging\":");
+    Serial.print(current_status.is_charging ? "true" : "false");
+    Serial.print(",\"is_connected\":");
+    Serial.print(current_status.is_connected ? "true" : "false");
+    Serial.print(",\"last_update_ms\":");
+    Serial.print(current_status.last_update_ms);
+    Serial.print(",\"consecutive_failures\":");
+    Serial.print(consecutive_failures);
+    Serial.println("}");
 }
 
 // ============================================================================

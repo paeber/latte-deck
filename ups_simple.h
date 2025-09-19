@@ -19,6 +19,10 @@
 #define CELL_CAPACITY_mAh           4000    // Cell capacity (mAh)
 #define R_INTERNAL_mOHM             300     // Internal resistance (mOhm)
 
+// JSON Reporting Configuration
+#define UPS_JSON_REPORT_INTERVAL    5000    // JSON report interval (ms)
+#define UPS_JSON_ENABLED            1       // Enable JSON reporting
+
 #define MIN_BATTERY_VOLTAGE         (N_CELLS_PACK * MIN_CELL_VOLTAGE)
 #define MAX_BATTERY_VOLTAGE         (N_CELLS_PACK * MAX_CELL_VOLTAGE)
 
