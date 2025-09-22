@@ -54,6 +54,16 @@ void printGamepadF(const char* format, ...){
 void setupGamepad()
 {
   pinMode(PIN_GAMEPAD_ENABLE, INPUT_PULLUP);
+
+  pinMode(PIN_BTN_L1, INPUT_PULLUP);
+  pinMode(PIN_BTN_L2, INPUT_PULLUP);
+  pinMode(PIN_BTN_L3, INPUT_PULLUP);
+  pinMode(PIN_BTN_L4, INPUT_PULLUP);
+
+  pinMode(PIN_BTN_R1, INPUT_PULLUP);
+  pinMode(PIN_BTN_R2, INPUT_PULLUP);
+  pinMode(PIN_BTN_R3, INPUT_PULLUP);
+  pinMode(PIN_BTN_R4, INPUT_PULLUP);
   
   // Initialize joysticks
   initializeJoystick(leftJoystick, PIN_JOYSTICK_L_X, PIN_JOYSTICK_L_Y, PIN_JOYSTICK_L_SEL);
@@ -70,7 +80,7 @@ void setupGamepad()
 
 void loopGamepad()
 {
-  if (!digitalRead(PIN_GAMEPAD_ENABLE)) 
+  if (digitalRead(PIN_GAMEPAD_ENABLE)) 
   {
     if(gamepadDisabled){
       Serial.println("Gamepad enabled");

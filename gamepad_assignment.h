@@ -22,7 +22,7 @@
 #define JOYSTICK_L_INVERT_Y         (1)     // Invert left joystick Y-axis
 
 // Sensitivity and Threshold Settings
-#define JOYSTICK_MOUSE_SENSITIVITY  100     // Mouse sensitivity (higher = slower)
+#define JOYSTICK_MOUSE_SENSITIVITY  350     // Mouse sensitivity (higher = slower)
 #define JOYSTICK_SIDE_MAX           500     // Maximum joystick value for clipping
 #define SPRINT_THRESHOLD            480     // Threshold for sprint activation
 #define SPRINT_THRESHOLD_ENABLED    0       // Enable sprint functionality for left joystick
@@ -55,9 +55,9 @@
 // Left side buttons (L1-L4)
 
 #define ACTION_BTN_L1                  MOUSE_RIGHT
-#define ACTION_BTN_L2                  KEY_Q       // Top button
-#define ACTION_BTN_L3                  KEY_1       // Middle button
-#define ACTION_BTN_L4                  KEY_2       // Bottom button
+#define ACTION_BTN_L2                  'q'       // Top button
+#define ACTION_BTN_L3                  'r'       // Middle button
+#define ACTION_BTN_L4                  'n'       // Bottom button
 
 // ============================================================================
 // Right Joystick Actions
@@ -77,36 +77,9 @@
 // Right side buttons (R1-R4)
 
 #define ACTION_BTN_R1                  MOUSE_LEFT
-#define ACTION_BTN_R2                  KEY_SPACE   // Top button
-#define ACTION_BTN_R3                  KEY_R       // Middle button
-#define ACTION_BTN_R4                  KEY_E       // Bottom button
+#define ACTION_BTN_R2                  ' '      // Top button
+#define ACTION_BTN_R3                  'e'      // Middle button
+#define ACTION_BTN_R4                  '2'      // Bottom button
 
-// ============================================================================
-// Assignment Summary Table
-// ============================================================================
-/*
-| Component        | Action                    | Key/Function        |
-|------------------|---------------------------|---------------------|
-| Left Joystick    | Up                        | W                   |
-|                  | Down                      | S                   |
-|                  | Left                      | A                   |
-|                  | Right                     | D                   |
-|                  | Press                     | Space               |
-|                  | Max (Sprint)              | E                   |
-| Left Buttons     | L1 (Shoulder)             | Right Mouse Click   |
-|                  | L2 (Top)                  | Q                   |
-|                  | L3 (Middle)               | 1                   |
-|                  | L4 (Bottom)               | 2                   |
-| Right Joystick   | Up                        | Mouse Up            |
-|                  | Down                      | Mouse Down          |
-|                  | Left                      | Mouse Left          |
-|                  | Right                     | Mouse Right         |
-|                  | Press                     | Left Mouse Click    |
-|                  | Max                       | None                |
-| Right Buttons    | R1 (Shoulder)             | Left Mouse Click    |
-|                  | R2 (Top)                  | Space               |
-|                  | R3 (Middle)               | R                   |
-|                  | R4 (Bottom)               | E                   |
-*/
 
 #endif // GAMEPAD_ASSIGNMENT_H

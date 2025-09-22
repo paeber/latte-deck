@@ -17,7 +17,7 @@
 // ============================================================================
 
 // Gamepad Enable Pin
-#define PIN_GAMEPAD_ENABLE          4       // Enable/disable gamepad functionality
+#define PIN_GAMEPAD_ENABLE          6       // Enable/disable gamepad functionality
 
 // Left Joystick Pins
 #define PIN_JOYSTICK_L_X            A5      // Left joystick X-axis (analog)
@@ -27,8 +27,8 @@
 // Left Button Pins
 #define PIN_BTN_L1                  7       // Left shoulder button
 #define PIN_BTN_L2                  8       // Left top button
-#define PIN_BTN_L3                  11      // Left middle button
-#define PIN_BTN_L4                  12      // Left bottom button
+#define PIN_BTN_L3                  9       // Left middle button
+#define PIN_BTN_L4                  10      // Left bottom button
 
 // Right Joystick Pins
 #define PIN_JOYSTICK_R_X            A2      // Right joystick X-axis (analog)
@@ -36,10 +36,10 @@
 #define PIN_JOYSTICK_R_SEL          18      // Right joystick button (digital)
 
 // Right Button Pins
-#define PIN_BTN_R1                  1       // Right shoulder button
-#define PIN_BTN_R2                  4       // Right top button (fixed from pin 1)
-#define PIN_BTN_R3                  5       // Right middle button
-#define PIN_BTN_R4                  6       // Right bottom button
+#define PIN_BTN_R1                  4       // Right shoulder button
+#define PIN_BTN_R2                  5       // Right top button (fixed from pin 1)
+#define PIN_BTN_R3                  11      // Right middle button
+#define PIN_BTN_R4                  12      // Right bottom button
 
 // ============================================================================
 // Pin Configuration Summary
